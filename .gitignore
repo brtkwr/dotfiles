@@ -29,3 +29,12 @@ Pictures/
 Public/
 .Trash/
 getting-started/
+
+.oh-my-zsh/
+.skaffold/
+.terraform.d/
+.vim/
+.vscode-insiders/
+Applications/
+Google Drive
+go/
