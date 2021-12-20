@@ -38,3 +38,13 @@ getting-started/
 Applications/
 Google Drive
 go/
+
+.ansible/
+.cache/
+.degit/
+.lesshst
+.node_repl_history
+.npm/
+.python_history
+.subversion/
+.yarnrc
