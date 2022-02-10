@@ -7,7 +7,6 @@
 .docker/
 .fzf.bash
 .fzf.zsh
-.gitconfig
 .gsutil/
 .kube/
 .local/

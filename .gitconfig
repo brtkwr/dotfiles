@@ -1,0 +1,11 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+	name = Bharat Kunwar
+	email = brtknr@bath.edu
+[pull]
+	rebase = true
+[commit]
+	template = /Users/brtknr/.gitmessage
+[alias]
+	please = push --force-with-lease
