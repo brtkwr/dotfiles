@@ -1,6 +1,6 @@
 cd ~/Code
-export GOPATH="/Users/brtknr/go/"
-export PATH="$PATH:/Users/brtknr/Code/google-cloud-sdk/bin:/Users/brtknr/Code/skaffold/checkout-api/bin"
+export GOPATH="$HOME/go/"
+export PATH="$PATH:$HOME/Code/google-cloud-sdk/bin:$HOME/Code/two/checkout-api/bin:$HOME/Code/two/risk-engine/bin"
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
@@ -16,4 +16,34 @@ export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/openssl@3/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export CLOUDSDK_PYTHON="/opt/homebrew/bin/python3"
 
+export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
+export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
+
+# Automatically source venv for tillit CLI
+export AUTO_VIRTUAL_ENV=true
+
+# Shortcut for VSCode
+code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
+
+# Rust
+source "$HOME/.cargo/env"
+
+# Grab secret from GCP
+function gcpsecret () {
+    gcloud secrets versions access latest --secret=$1
+}
+
+# Usage: kube <cluster> <namespace>
+function kube() {
+    kubectx ${1:-"-c"}
+    kubens ${2:-"-c"}
+}
+
+# Kubectl
+alias k="kubectl"
+
+# Source secrets
 source ~/.secrets
+
+# To be able to sign commits
+export GPG_TTY=$(tty)

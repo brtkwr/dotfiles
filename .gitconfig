@@ -1,11 +1,20 @@
 # This is Git's per-user configuration file.
 [user]
-# Please adapt and uncomment the following lines:
 	name = Bharat Kunwar
-	email = brtknr@bath.edu
+	email = bkunwar@two.inc
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzqpG9N2Zjnb45cYUgtm1R3PrTJZhB+cUcFbqoijzWn brtknr@MacBook
+	#email = brtknr@bath.edu
+	#signingkey = 8FB8EE381066C96A13832B1BF74AD8C10B672F41
 [pull]
 	rebase = true
 [commit]
 	template = /Users/brtknr/.gitmessage
+	gpgsign = true
 [alias]
 	please = push --force-with-lease
+[init]
+	defaultBranch = main
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = /Users/brtknr/.ssh/allowed_signers
