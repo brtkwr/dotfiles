@@ -7,8 +7,9 @@
 	#signingkey = 8FB8EE381066C96A13832B1BF74AD8C10B672F41
 [pull]
 	rebase = true
+[push]
+	autoSetupRemote = true
 [commit]
-	template = /Users/brtknr/.gitmessage
 	gpgsign = true
 [alias]
 	please = push --force-with-lease
@@ -18,3 +19,5 @@
 	format = ssh
 [gpg "ssh"]
 	allowedSignersFile = /Users/brtknr/.ssh/allowed_signers
+[merge]
+	conflictstyle = zdiff3

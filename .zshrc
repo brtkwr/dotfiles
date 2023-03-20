@@ -108,3 +108,11 @@ export NVM_DIR="$HOME/.nvm"
 [[ /opt/homebrew/bin/kubectl ]] && source <(kubectl completion zsh)
 alias k=kubectl
 complete -F __start_kubectl k
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/brtknr/Code/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/brtknr/Code/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/brtknr/Code/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/brtknr/Code/google-cloud-sdk/completion.zsh.inc'; fi

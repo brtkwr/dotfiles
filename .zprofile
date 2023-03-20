@@ -30,20 +30,27 @@ source "$HOME/.cargo/env"
 
 # Grab secret from GCP
 function gcpsecret () {
-    gcloud secrets versions access latest --secret=$1
+    gcloud secrets versions access latest --secret=$1 --project=$2
 }
 
 # Usage: kube <cluster> <namespace>
 function kube() {
     kubectx ${1:-"-c"}
-    kubens ${2:-"-c"}
+    kubens ${2:-}
 }
 
 # Kubectl
 alias k="kubectl"
+
+# Use new GKE auth plugin
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 # Source secrets
 source ~/.secrets
 
 # To be able to sign commits
 export GPG_TTY=$(tty)
+
+# Terraform args
+export TF_CLI_ARGS_plan="-parallelism=50"
+export TF_CLI_ARGS_apply="-parallelism=50"
