@@ -1,6 +1,6 @@
-cd ~/Code
+cd Desktop
 export GOPATH="$HOME/go/"
-export PATH="$PATH:$HOME/Code/google-cloud-sdk/bin:$HOME/Code/two/checkout-api/bin:$HOME/Code/two/risk-engine/bin"
+export PATH="$PATH:$HOME/google-cloud-sdk/bin"
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
@@ -14,7 +14,7 @@ export PKG_CONFIG_PATH="/opt/homebrew/opt/python@3.10/lib/pkgconfig"
 export LDFLAGS="-L/opt/homebrew/opt/python@3.10/lib"
 export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/openssl@3/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
-export CLOUDSDK_PYTHON="/opt/homebrew/bin/python3"
+export CLOUDSDK_PYTHON="python3"
 
 export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
 export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1

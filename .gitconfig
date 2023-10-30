@@ -1,10 +1,8 @@
 # This is Git's per-user configuration file.
 [user]
 	name = Bharat Kunwar
-	email = bkunwar@two.inc
+	email = brtknr@icloud.com
 	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzqpG9N2Zjnb45cYUgtm1R3PrTJZhB+cUcFbqoijzWn brtknr@MacBook
-	#email = brtknr@bath.edu
-	#signingkey = 8FB8EE381066C96A13832B1BF74AD8C10B672F41
 [pull]
 	rebase = true
 [push]
@@ -13,6 +11,7 @@
 	gpgsign = true
 [alias]
 	please = push --force-with-lease
+	appraise = !/Users/brtknr/go/bin/git-appraise
 [init]
 	defaultBranch = main
 [gpg]
@@ -21,3 +20,5 @@
 	allowedSignersFile = /Users/brtknr/.ssh/allowed_signers
 [merge]
 	conflictstyle = zdiff3
+[includeIf "gitdir:~/Desktop/two/"]
+	path = ~/Desktop/two/.gitconfig
