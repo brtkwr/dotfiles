@@ -1,7 +1,7 @@
 # This is Git's per-user configuration file.
 [user]
 	name = Bharat Kunwar
-	email = brtknr@icloud.com
+	email = brtkwr@gmail.com
 	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzqpG9N2Zjnb45cYUgtm1R3PrTJZhB+cUcFbqoijzWn brtknr@MacBook
 [pull]
 	rebase = true
@@ -20,5 +20,5 @@
 	allowedSignersFile = /Users/brtknr/.ssh/allowed_signers
 [merge]
 	conflictstyle = zdiff3
-[includeIf "gitdir:~/Desktop/two/"]
-	path = ~/Desktop/two/.gitconfig
+[includeIf "gitdir:~/Code/two/"]
+	path = ~/Code/two/.gitconfig

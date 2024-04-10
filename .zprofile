@@ -1,6 +1,6 @@
-cd Desktop
+cd Code
 export GOPATH="$HOME/go/"
-export PATH="$PATH:$HOME/google-cloud-sdk/bin"
+export PATH="$PATH:$HOME/google-cloud-sdk/bin:/Applications/Docker.app/Contents/Resources/bin"
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
@@ -54,3 +54,6 @@ export GPG_TTY=$(tty)
 # Terraform args
 export TF_CLI_ARGS_plan="-parallelism=50"
 export TF_CLI_ARGS_apply="-parallelism=50"
+
+# Fuzzy finder
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

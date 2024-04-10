@@ -13,6 +13,8 @@ autocmd BufReadPost *
 autocmd FileType javascript setlocal shiftwidth=2 tabstop=2 softtabstop=0 expandtab
 autocmd FileType typescript setlocal shiftwidth=2 tabstop=2 softtabstop=0 expandtab
 autocmd FileType svelte setlocal shiftwidth=2 tabstop=2 softtabstop=0 expandtab
+autocmd FileType php setlocal shiftwidth=4 tabstop=4 softtabstop=0 expandtab
+autocmd FileType html setlocal shiftwidth=4 tabstop=4 softtabstop=0 expandtab
 
 " Do not slurp to clipboard when using d to delete
 nnoremap d "_d

@@ -50,6 +50,10 @@
 .zsh_sessions/
 .zshenv
 .zshrc.backup
+.composer/
+.php_history
+.rediscli_history
+.zcompdump*
 Applications/
 Code/
 Desktop/
