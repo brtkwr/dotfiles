@@ -27,6 +27,7 @@ echo "Installing dotfiles from $DOTFILES_DIR"
 # Shell
 link "$DOTFILES_DIR/zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/zprofile" "$HOME/.zprofile"
+link "$DOTFILES_DIR/profile" "$HOME/.profile"
 
 # Git
 link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
