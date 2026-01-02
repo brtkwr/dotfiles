@@ -1,0 +1,53 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Bharat Kunwar
+	email = brtkwr@gmail.com
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKIvgIyJqPWv02USWMr7+pV0ZeK5szAfzhxqiEtgLx8O
+[commit]
+	gpgsign = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[alias]
+	please = push --force-with-lease
+  wt = worktree
+  cm = commit
+  cs = !SKIP=commit-msg git commit
+  cn = commit --no-verify
+  cp = !git branch --show-current >> .gitbranch
+  co = !git checkout $(cat .gitbranch | uniq | fzf)
+  co = !git checkout $(git branch | fzf)
+  rb = rebase
+  ft = fetch
+  fr = !git fetch ${1%%"/"*} && git rebase $1 &&:
+  hf = "!f() { current=$(git branch --show-current); if [[ $current != hotfix/* ]]; then git branch -m hotfix/$current; fi; }; f"
+  fh = "!f() { current=$(git branch --show-current); if [[ $current == hotfix/* ]]; then target=${current#hotfix/}; git branch -m $target; fi; }; f"
+  vs = !vim $(git diff --name-only HEAD)
+  vl = !vim $(git diff-tree --no-commit-id --name-only -r HEAD)
+	sd = "!f() { target=${1:-staging}; branch=$(git symbolic-ref --short HEAD); git checkout $target && git branch -D $branch; }; f"
+	pm = "!f() { base=${1:-master}; git fetch; git worktree list --porcelain | awk '/^worktree/ {wt=$2} /^branch/ {br=substr($0,8); if(wt && br && system(\"git merge-base --is-ancestor \" br \" origin/'$base' 2>/dev/null\")==0) {print \"Removing: \" wt \" (\" br \")\"; system(\"git worktree remove \\\"\" wt \"\\\"\")}}'; git branch --merged origin/$base | grep -v \"^\\*\" | grep -v \"$base$\" | xargs -r git branch -d; }; f"
+[init]
+	defaultBranch = main
+# [merge]
+# 	conflictstyle = zdiff3
+[includeIf "gitdir:~/Code/two/"]
+	path = ~/Code/two/.gitconfig
+[core]
+	editor = nvim
+    # pager = delta
+[interactive]
+    # diffFilter = delta --color-only
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    line-numbers = true
+    side-by-side = true
+    # delta detects terminal colors automatically; set one of these to disable auto-detection
+    # dark = true
+    # light = true
+[merge]
+    conflictstyle = zdiff3
