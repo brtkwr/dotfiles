@@ -35,4 +35,7 @@ link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 mkdir -p "$HOME/.config"
 link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 
+# Hammerspoon
+link "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
+
 echo "Done! Restart your shell or run: source ~/.zshrc"
