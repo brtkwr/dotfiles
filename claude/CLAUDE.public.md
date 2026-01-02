@@ -10,7 +10,7 @@
 
 - Use fd instead of find to search files by name
 - Always use rg instead of grep
-- When using secrets from env vars in curl headers, use `$(printenv VAR)` not `$VAR` (avoids shell expansion issues)
+- When using secrets from env vars in curl headers, use backticks `` `printenv VAR` `` not `$(printenv VAR)` or `$VAR` (zsh expansion issues)
 
 ## Git
 
