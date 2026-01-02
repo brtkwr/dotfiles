@@ -44,7 +44,6 @@ link "$DOTFILES_DIR/claude/CLAUDE.public.md" "$HOME/.claude/CLAUDE.public.md"
 link "$DOTFILES_DIR/claude/build-claude-md.sh" "$HOME/.claude/build-claude-md.sh"
 link "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
-link "$DOTFILES_DIR/claude/skills" "$HOME/.claude/skills"
 # Build CLAUDE.md from all CLAUDE.*.md files
 "$HOME/.claude/build-claude-md.sh"
 
