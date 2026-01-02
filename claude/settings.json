@@ -1,0 +1,113 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(fd:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(stat:*)",
+      "Bash(du:*)",
+      "Bash(wc:*)",
+      "Bash(diff:*)",
+      "Bash(which:*)",
+      "Bash(realpath:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(cut:*)",
+      "Bash(jq:*)",
+      "Bash(yq:*)",
+      "Bash(file:*)",
+      "Bash(basename:*)",
+      "Bash(dirname:*)",
+      "Bash(date:*)",
+
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh workflow list:*)",
+
+      "Bash(kubectl get:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl top:*)",
+
+      "Bash(helm list:*)",
+      "Bash(helm status:*)",
+      "Bash(helm get:*)",
+
+      "Bash(docker ps:*)",
+      "Bash(docker images:*)",
+      "Bash(docker logs:*)",
+
+      "Bash(argocd app list:*)",
+      "Bash(argocd app get:*)",
+
+      "Bash(npm list:*)",
+      "Bash(npm ls:*)",
+      "Bash(pip list:*)",
+      "Bash(pip show:*)",
+      "Bash(brew list:*)",
+      "Bash(brew info:*)",
+
+      "mcp__linear-server__list_issues",
+      "mcp__linear-server__get_issue",
+      "mcp__linear-server__create_issue",
+      "mcp__linear-server__update_issue",
+      "mcp__linear-server__list_comments",
+      "mcp__linear-server__create_comment",
+      "mcp__linear-server__list_projects",
+      "mcp__linear-server__get_project",
+      "mcp__linear-server__list_teams",
+      "mcp__linear-server__get_team",
+      "mcp__linear-server__list_users",
+      "mcp__linear-server__get_user",
+      "mcp__linear-server__list_documents",
+      "mcp__linear-server__get_document",
+      "mcp__linear-server__list_cycles",
+      "mcp__linear-server__list_issue_statuses",
+      "mcp__linear-server__get_issue_status",
+      "mcp__linear-server__list_issue_labels",
+      "mcp__linear-server__list_project_labels",
+      "mcp__linear-server__search_documentation",
+
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__get_console_message",
+      "mcp__chrome-devtools__list_network_requests",
+      "mcp__chrome-devtools__get_network_request"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "assistant",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/speak-response.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "engineers@two-inc": true
+  },
+  "alwaysThinkingEnabled": true
+}
