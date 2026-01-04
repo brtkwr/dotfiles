@@ -124,18 +124,23 @@ gsecret() {
 }
 
 # GCP: Auto login
-# Usage: glogin [-f] [-q]
+# Usage: glogin [-f] [-q] [-s]
 glogin() {
   local force=false
   local quiet=false
+  local sheets=false
   local opt
 
-  while getopts ":fq" opt; do
+  while getopts ":fqs" opt; do
     case ${opt} in
     f) force=true ;;
     q) quiet=true ;;
+    s) sheets=true ;;
     \?)
-      echo "Usage: glogin [-f] [-q]" >&2
+      echo "Usage: glogin [-f] [-q] [-s]" >&2
+      echo "  -f  Force re-login" >&2
+      echo "  -q  Quiet mode" >&2
+      echo "  -s  Include Google Sheets scope (requires extra browser auth)" >&2
       return 1
       ;;
     esac
@@ -147,12 +152,17 @@ glogin() {
 
   if [[ $force == true ]]; then
     echo "Time to log back into Google Cloud..."
-    gcloud auth login --update-adc --scopes="https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform"
+    gcloud auth login --update-adc
   else
     if [[ $quiet == false ]]; then
       account=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
       echo "Already logged in to Google Cloud as $account."
     fi
+  fi
+
+  if [[ $sheets == true ]]; then
+    echo "Adding Google Sheets scope..."
+    gcloud auth application-default login --scopes=https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform
   fi
 }
 
