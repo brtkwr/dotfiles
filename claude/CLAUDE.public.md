@@ -6,6 +6,12 @@
 - All my code lives under ~/Code/
 - Always import modules at the top unless there is a risk of circular import
 
+## Dotfiles
+
+- When updating Claude instructions, edit `~/Code/dotfiles/claude/CLAUDE.public.md` (not `~/.claude/CLAUDE.md` directly)
+- After editing, run `~/Code/dotfiles/claude/build-claude-md.sh` to rebuild
+- Commit and push dotfiles changes
+
 ## Command Preferences
 
 - Use fd instead of find to search files by name
