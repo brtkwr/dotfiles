@@ -8,9 +8,15 @@
 
 ## Dotfiles
 
-- When updating Claude instructions, edit `~/Code/dotfiles/claude/CLAUDE.public.md` (not `~/.claude/CLAUDE.md` directly)
-- After editing, run `~/Code/dotfiles/claude/build-claude-md.sh` to rebuild
-- Commit and push dotfiles changes
+Config files are managed in `~/Code/dotfiles/`. When modifying any of these, update the source and push:
+
+- **Claude instructions**: Edit `~/Code/dotfiles/claude/CLAUDE.public.md`, then run `~/Code/dotfiles/claude/build-claude-md.sh`
+- **Shell**: `~/Code/dotfiles/zshrc`, `~/Code/dotfiles/profile`, `~/Code/dotfiles/zprofile`
+- **Neovim**: `~/Code/dotfiles/nvim/`
+- **Git**: `~/Code/dotfiles/gitconfig`
+- **Hammerspoon**: `~/Code/dotfiles/hammerspoon/`
+
+After changes, commit and push to dotfiles repo.
 
 ## Command Preferences
 
