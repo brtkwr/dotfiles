@@ -215,6 +215,7 @@ alias jqx="jq -r '.severity + \" | \" + .event'"
 alias claudes="rm ~/.claude/.silence 2> /dev/null"
 alias claudeq="touch ~/.claude/.silence"
 alias claudey="claude --dangerously-skip-permissions"
+unalias ccsy 2>/dev/null
 ccsy() { ccs "$@" -- --allow-dangerously-skip-permission --plan; }
 
 # =============================================================================
