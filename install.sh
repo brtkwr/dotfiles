@@ -36,6 +36,9 @@ link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 mkdir -p "$HOME/.config"
 link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 
+# Starship
+link "$DOTFILES_DIR/starship.toml" "$HOME/.config/starship.toml"
+
 # Hammerspoon
 link "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
 
