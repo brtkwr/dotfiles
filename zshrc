@@ -32,10 +32,6 @@ source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 # ------------------------------------------------------------------------------
 fpath=(/Users/brtkwr/.docker/completions $fpath)
 
-# Antigravity
-# ------------------------------------------------------------------------------
-export PATH="/Users/brtkwr/.antigravity/antigravity/bin:$PATH"
-
 # Git worktree selector with fzf
 wt() {
   local create=false
