@@ -36,20 +36,44 @@ USAGE
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -c) create=true; name="$2"; shift 2 ;;
-      -e) copy_envrc=true; shift ;;
-      -d) delete=true; shift; [[ $# -gt 0 && ! "$1" =~ ^- ]] && { target="$1"; shift; } ;;
-      -h) _wt_usage; return 0 ;;
-      *) _wt_usage; return 1 ;;
+    -c)
+      create=true
+      name="$2"
+      shift 2
+      ;;
+    -e)
+      copy_envrc=true
+      shift
+      ;;
+    -d)
+      delete=true
+      shift
+      [[ $# -gt 0 && ! "$1" =~ ^- ]] && {
+        target="$1"
+        shift
+      }
+      ;;
+    -h)
+      _wt_usage
+      return 0
+      ;;
+    *)
+      _wt_usage
+      return 1
+      ;;
     esac
   done
 
   if ($create || $copy_envrc) && $delete; then
-    echo "Error: -c/-e and -d are mutually exclusive"; return 1
+    echo "Error: -c/-e and -d are mutually exclusive"
+    return 1
   fi
 
   if $create; then
-    [[ -z "$name" ]] && { echo "Error: -c requires a name"; return 1; }
+    [[ -z "$name" ]] && {
+      echo "Error: -c requires a name"
+      return 1
+    }
     local root=$(git rev-parse --show-toplevel)
     local new_path="$root/$name"
     git worktree add "$new_path" -b "$name" && cd "$new_path"
@@ -67,12 +91,26 @@ USAGE
     [[ -z "$to_delete" ]] && return 0
     local main_wt=$(git worktree list | head -1 | awk '{print $1}')
     if [[ "$to_delete" == "$main_wt" ]]; then
-      echo "Error: cannot delete main worktree"; return 1
+      echo "Error: cannot delete main worktree"
+      return 1
     fi
     [[ "$(realpath .)" == "$to_delete"* ]] && cd "$main_wt"
     git worktree remove "$to_delete"
   else
-    local selected=$(git worktree list | fzf --height 40% --reverse | awk '{print $1}')
+    local selected=$(git worktree list | \
+      fzf --height 40% --reverse \
+          --header 'ENTER: cd | CTRL-D: delete' \
+          --bind 'ctrl-d:execute(
+            main_wt=$(git worktree list | head -1 | awk '\''{print $1}'\''); \
+            wt_path=$(echo {} | awk '\''{print $1}'\''); \
+            if [[ "$wt_path" != "$main_wt" ]]; then \
+              git worktree remove "$wt_path" && echo "Deleted $wt_path" || echo "Failed to delete $wt_path"; \
+            else \
+              echo "Error: cannot delete main worktree"; \
+            fi; \
+            read -p "Press enter to continue..."
+          )+reload(git worktree list)' | \
+      awk '{print $1}')
     [[ -n "$selected" ]] && cd "$selected"
   fi
 }
@@ -227,15 +265,6 @@ rgv() {
 }
 
 # =============================================================================
-# Claude Code Functions
-# =============================================================================
-
-# Claude Code: Spawn session with --allow-dangerously-skip-permissions
-ccsy() {
-  ccs "$@" -- --allow-dangerously-skip-permissions --permission-mode plan
-}
-
-# =============================================================================
 # General Aliases
 # =============================================================================
 
@@ -267,9 +296,26 @@ alias jqx="jq -r '.severity + \" | \" + .event'"
 # Claude Code Aliases
 # =============================================================================
 
-alias ccspeak="rm ~/.claude/.silence 2> /dev/null"
-alias ccquiet="touch ~/.claude/.silence"
+unalias claude 2>/dev/null
+claude() {
+  source ~/.claude.secret
+  command claude "$@"
+}
+
 alias cc="claude"
 alias ccy="cc --allow-dangerously-skip-permissions --permission-mode plan"
 alias claudey="ccy"
-unalias ccsy 2>/dev/null  # Unalias in case it exists, we define it as a function above
+
+unalias ccs 2>/dev/null
+ccs() {
+  source ~/.claude.secret
+  command ccs "$@"
+}
+
+unalias ccsy 2>/dev/null
+ccsy() {
+  ccs "$@" -- --allow-dangerously-skip-permissions --permission-mode plan
+}
+
+alias ccspeak="rm ~/.claude/.silence 2> /dev/null"
+alias ccquiet="touch ~/.claude/.silence"
