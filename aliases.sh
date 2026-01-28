@@ -6,100 +6,70 @@
 
 # Git worktree selector with fzf
 wt() {
-  local create=false
-  local delete=false
   local copy_envrc=false
   local name=""
-  local target=""
 
   _wt_usage() {
     cat <<USAGE
-Usage: wt [-c <name>] [-e] [-d [path]] [-h]
+Usage: wt [<name>] [-e] [-h]
 
 Git worktree helper with fzf selection.
 
 Options:
-  -c <name>   Create a new worktree with branch name <name>
-  -e          Copy .envrc from root and run direnv allow (use with -c)
-  -d [path]   Delete a worktree (fuzzy select if no path given, use '.' for current)
+  <name>      Create a new worktree with branch name <name>
+  -e          Copy .envrc from root and run direnv allow (use with name)
   -h          Show this help message
 
 Examples:
-  wt                  Fuzzy select and cd to a worktree
-  wt -c feature-x     Create worktree 'feature-x' and cd into it
-  wt -c feature-x -e  Same as above, plus setup direnv
-  wt -d               Fuzzy select a worktree to delete
-  wt -d .             Delete the current worktree
-  wt -d my-feature    Delete worktree 'my-feature'
+  wt                  Fuzzy select and cd to a worktree (use CTRL-D to delete)
+  wt feature-x        Create worktree 'feature-x' and cd into it
+  wt feature-x -e     Same as above, plus setup direnv
 USAGE
   }
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-    -c)
-      create=true
-      name="$2"
-      shift 2
-      ;;
     -e)
       copy_envrc=true
       shift
-      ;;
-    -d)
-      delete=true
-      shift
-      [[ $# -gt 0 && ! "$1" =~ ^- ]] && {
-        target="$1"
-        shift
-      }
       ;;
     -h)
       _wt_usage
       return 0
       ;;
-    *)
+    -*)
       _wt_usage
       return 1
+      ;;
+    *)
+      name="$1"
+      shift
       ;;
     esac
   done
 
-  if ($create || $copy_envrc) && $delete; then
-    echo "Error: -c/-e and -d are mutually exclusive"
-    return 1
-  fi
-
-  if $create; then
-    [[ -z "$name" ]] && {
-      echo "Error: -c requires a name"
-      return 1
-    }
+  if [[ -n "$name" ]]; then
     local root=$(git rev-parse --show-toplevel)
-    local new_path="$root/$name"
-    git worktree add "$new_path" -b "$name" && cd "$new_path"
+    local new_path
+    # If user specified a path with /, use it as-is; otherwise put it in .worktrees/
+    if [[ "$name" == */* ]]; then
+      new_path="$root/$name"
+    else
+      local worktrees_dir="$root/.worktrees"
+      [[ ! -d "$worktrees_dir" ]] && mkdir -p "$worktrees_dir"
+      new_path="$worktrees_dir/$name"
+    fi
+    git worktree add "$new_path" -b "$(basename "$name")" && cd "$new_path"
     if $copy_envrc && [[ -f "$root/.envrc" ]]; then
       cp "$root/.envrc" "$new_path/.envrc"
       direnv allow
     fi
-  elif $delete; then
-    local to_delete
-    if [[ -n "$target" ]]; then
-      to_delete=$(realpath "$target")
-    else
-      to_delete=$(git worktree list | fzf --height 40% --reverse | awk '{print $1}')
-    fi
-    [[ -z "$to_delete" ]] && return 0
-    local main_wt=$(git worktree list | head -1 | awk '{print $1}')
-    if [[ "$to_delete" == "$main_wt" ]]; then
-      echo "Error: cannot delete main worktree"
-      return 1
-    fi
-    [[ "$(realpath .)" == "$to_delete"* ]] && cd "$main_wt"
-    git worktree remove "$to_delete"
   else
     local selected=$(git worktree list | \
       fzf --height 40% --reverse \
-          --header 'ENTER: cd | CTRL-D: delete' \
+          --header 'ENTER: cd | CTRL-D: delete | CTRL-L: full log with diffs' \
+          --preview 'git -C $(echo {} | awk '\''{print $1}'\'') log --stat --format=medium --color -10' \
+          --preview-window 'right:60%:wrap' \
           --bind 'ctrl-d:execute(
             main_wt=$(git worktree list | head -1 | awk '\''{print $1}'\''); \
             wt_path=$(echo {} | awk '\''{print $1}'\''); \
@@ -109,7 +79,8 @@ USAGE
               echo "Error: cannot delete main worktree"; \
             fi; \
             read -p "Press enter to continue..."
-          )+reload(git worktree list)' | \
+          )+reload(git worktree list)' \
+          --bind 'ctrl-l:execute(git -C $(echo {} | awk '\''{print $1}'\'') log -p --color | less -R)' | \
       awk '{print $1}')
     [[ -n "$selected" ]] && cd "$selected"
   fi

@@ -28,7 +28,8 @@ After changes, commit and push to dotfiles repo.
 
 - For open source projects, use conventional commit format (feat:, fix:, etc.) - no Linear tickets
 - For trivial changes, use --no-verify flag when making commits
-- Always create worktrees in a subdirectory
+- **IMPORTANT**: Always create worktrees in a `.worktrees/` subdirectory, never at the repository root
+- Always add `.worktrees/` to .gitignore if it doesn't already exist
 
 ## Blog Posts
 
