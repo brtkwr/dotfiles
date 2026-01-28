@@ -1,3 +1,12 @@
+## User Memory
+
+When asked to update user memory/instructions, edit the appropriate source file (never edit CLAUDE.md directly as it's derived):
+- `~/.claude/CLAUDE.work.md` - Work-specific instructions (Two Inc)
+- `~/.claude/CLAUDE.private.md` - Private personal instructions (not synced)
+- `~/.claude/CLAUDE.public.md` - Public personal instructions (synced via dotfiles)
+
+After editing, rebuild: `~/Code/dotfiles/claude/build-claude-md.sh`
+
 ## General Rules
 
 - ALWAYS load project specific @AGENTS.md
@@ -26,6 +35,7 @@ After changes, commit and push to dotfiles repo.
 
 ## Git
 
+- **IMPORTANT**: Always pull latest changes from origin before starting work on a task
 - For open source projects, use conventional commit format (feat:, fix:, etc.) - no Linear tickets
 - For trivial changes, use --no-verify flag when making commits
 - **IMPORTANT**: Always create worktrees in a `.worktrees/` subdirectory, never at the repository root
