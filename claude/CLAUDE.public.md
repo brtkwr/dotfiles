@@ -1,11 +1,9 @@
 ## User Memory
 
-When asked to update user memory/instructions, edit the appropriate source file (never edit CLAUDE.md directly as it's derived):
+When asked to update user memory/instructions, edit the appropriate source file:
 - `~/.claude/CLAUDE.work.md` - Work-specific instructions (Two Inc)
 - `~/.claude/CLAUDE.private.md` - Private personal instructions (not synced)
 - `~/.claude/CLAUDE.public.md` - Public personal instructions (synced via dotfiles)
-
-After editing, rebuild: `~/Code/dotfiles/claude/build-claude-md.sh`
 
 ## General Rules
 
@@ -19,7 +17,7 @@ After editing, rebuild: `~/Code/dotfiles/claude/build-claude-md.sh`
 
 Config files are managed in `~/Code/dotfiles/`. When modifying any of these, update the source and push:
 
-- **Claude instructions**: Edit `~/Code/dotfiles/claude/CLAUDE.public.md`, then run `~/Code/dotfiles/claude/build-claude-md.sh`
+- **Claude instructions**: `~/Code/dotfiles/claude/CLAUDE.public.md`
 - **Shell**: `~/Code/dotfiles/zshrc`, `~/Code/dotfiles/profile`, `~/Code/dotfiles/zprofile`
 - **Neovim**: `~/Code/dotfiles/nvim/`
 - **Git**: `~/Code/dotfiles/gitconfig`

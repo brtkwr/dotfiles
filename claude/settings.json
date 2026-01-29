@@ -23,13 +23,11 @@
       "Bash(basename:*)",
       "Bash(dirname:*)",
       "Bash(date:*)",
-
       "Bash(git status:*)",
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git show:*)",
       "Bash(git branch:*)",
-
       "Bash(gh pr view:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr create:*)",
@@ -38,30 +36,24 @@
       "Bash(gh repo view:*)",
       "Bash(gh run list:*)",
       "Bash(gh workflow list:*)",
-
       "Bash(kubectl get:*)",
       "Bash(kubectl describe:*)",
       "Bash(kubectl logs:*)",
       "Bash(kubectl top:*)",
-
       "Bash(helm list:*)",
       "Bash(helm status:*)",
       "Bash(helm get:*)",
-
       "Bash(docker ps:*)",
       "Bash(docker images:*)",
       "Bash(docker logs:*)",
-
       "Bash(argocd app list:*)",
       "Bash(argocd app get:*)",
-
       "Bash(npm list:*)",
       "Bash(npm ls:*)",
       "Bash(pip list:*)",
       "Bash(pip show:*)",
       "Bash(brew list:*)",
       "Bash(brew info:*)",
-
       "mcp__linear-server__list_issues",
       "mcp__linear-server__get_issue",
       "mcp__linear-server__create_issue",
@@ -82,14 +74,18 @@
       "mcp__linear-server__list_issue_labels",
       "mcp__linear-server__list_project_labels",
       "mcp__linear-server__search_documentation",
-
       "mcp__chrome-devtools__list_pages",
       "mcp__chrome-devtools__take_snapshot",
       "mcp__chrome-devtools__take_screenshot",
       "mcp__chrome-devtools__list_console_messages",
       "mcp__chrome-devtools__get_console_message",
       "mcp__chrome-devtools__list_network_requests",
-      "mcp__chrome-devtools__get_network_request"
+      "mcp__chrome-devtools__get_network_request",
+      "Bash(tac:*)",
+      "Bash(dig:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $domain ===\")",
+      "Bash(done)"
     ],
     "deny": []
   },
@@ -107,7 +103,15 @@
     ]
   },
   "enabledPlugins": {
-    "engineers@two-inc": true
-  },
-  "alwaysThinkingEnabled": true
+    "ty-lsp@agentic-utils": true,
+    "engineers@two-inc": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "linear@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "claudesync@Folly": true
+  }
 }
