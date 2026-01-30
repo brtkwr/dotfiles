@@ -84,5 +84,12 @@ source ~/Code/dotfiles/aliases.sh
 # Startup (backgrounded to avoid blocking, skipped in Claude Code)
 # =============================================================================
 if [[ -z "$CLAUDECODE" ]]; then
+  # Check ADC is valid, prompt if not
+  (
+    adc_file="$HOME/.config/gcloud/application_default_credentials.json"
+    if [[ ! -f "$adc_file" ]] || ! gcloud auth application-default print-access-token &>/dev/null; then
+      echo "GCP ADC expired - run 'glogin -a' to refresh"
+    fi
+  ) &
   (brew update >/dev/null 2>&1 &)
 fi
