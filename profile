@@ -71,7 +71,9 @@ source "$BREW_PREFIX/share/google-cloud-sdk/path.zsh.inc"
 source ~/Code/dotfiles/aliases.sh
 
 # =============================================================================
-# Startup (backgrounded to avoid blocking)
+# Startup (backgrounded to avoid blocking, skipped in Claude Code)
 # =============================================================================
-[[ -z "$CLAUDECODE" ]] && (glogin -qs &)
-(brew update >/dev/null 2>&1 &)
+if [[ -z "$CLAUDECODE" ]]; then
+    (glogin -qs &)
+    (brew update >/dev/null 2>&1 &)
+fi
