@@ -234,19 +234,32 @@ gsecret() {
 }
 
 # GCP: Login helper
-# Usage: glogin [-f] [-q] [-c]
+# Usage: glogin [-f] [-q] [-c] [-s]
 glogin() {
   local force=false
   local quiet=false
   local cli=false
+  local scopes=false
 
-  while getopts ":fqc" opt; do
+  while getopts ":fqcs" opt; do
     case ${opt} in
       f) force=true ;;
       q) quiet=true ;;
       c) cli=true ;;
+      s) scopes=true ;;
     esac
   done
+
+  # Show current scopes
+  if [[ $scopes == true ]]; then
+    local token=$(gcloud auth application-default print-access-token 2>/dev/null)
+    if [[ -n "$token" ]]; then
+      curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$token" | jq -r '.scope // "No scopes found"'
+    else
+      echo "No valid ADC token"
+    fi
+    return $?
+  fi
 
   # CLI auth
   if [[ $cli == true ]]; then
