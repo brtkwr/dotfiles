@@ -26,8 +26,9 @@ export GOBIN="$HOME/.local/bin"
 export TF_CLI_ARGS_plan="-parallelism=50"
 export TF_CLI_ARGS_apply="-parallelism=50"
 
-# GCP
+# GCP - use ADC for everything (single auth with all scopes)
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
 
 # 1Password SSH Agent
 export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
