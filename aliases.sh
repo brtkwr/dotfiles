@@ -275,14 +275,8 @@ glogin() {
     needs_login=true
   elif [[ ! -f "$adc_file" ]]; then
     needs_login=true
-  else
-    local now=$(date +%s)
-    local file_age=$(( now - $(stat -f %m "$adc_file") ))
-    if (( file_age > 3600 )); then
-      needs_login=true
-    elif ! gcloud auth application-default print-access-token &>/dev/null; then
-      needs_login=true
-    fi
+  elif ! gcloud auth application-default print-access-token &>/dev/null; then
+    needs_login=true
   fi
 
   if [[ $needs_login == true ]]; then
