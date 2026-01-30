@@ -233,55 +233,26 @@ gsecret() {
   gcloud secrets versions access latest --secret="$secret_name" --project="$project"
 }
 
-# GCP: Auto login
-# Usage: glogin [-f] [-q]
+# GCP: Login helper
+# Usage: glogin [-a|-c]
 glogin() {
-  local force=false
-  local quiet=false
-  local opt
-
-  while getopts ":fq" opt; do
-    case ${opt} in
-    f) force=true ;;
-    q) quiet=true ;;
-    \?)
-      echo "Usage: glogin [-f] [-q]" >&2
-      echo "  -f  Force re-login" >&2
-      echo "  -q  Quiet mode" >&2
+  case "$1" in
+    -a|--adc)
+      # ADC auth with all scopes (for kubectl, apps, scripts)
+      gcloud auth application-default login \
+        --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets
+      ;;
+    -c|--cli)
+      # CLI auth (for gcloud commands)
+      gcloud auth login
+      ;;
+    *)
+      echo "Usage: glogin [-a|-c]" >&2
+      echo "  -a, --adc  ADC auth (for kubectl, apps, scripts)" >&2
+      echo "  -c, --cli  CLI auth (for gcloud commands)" >&2
       return 1
       ;;
-    esac
-  done
-
-  # Check if token is valid (file-based check, no network call)
-  local adc_file="${HOME}/.config/gcloud/application_default_credentials.json"
-  local cache_file="${HOME}/.config/gcloud/.glogin_check"
-  local now=$(date +%s)
-  local cache_age=3600  # Check at most once per hour
-
-  if [[ -f "$cache_file" ]]; then
-    local last_check=$(cat "$cache_file")
-    if (( now - last_check < cache_age )) && [[ $force == false ]]; then
-      [[ $quiet == false ]] && echo "GCP auth checked recently, skipping."
-      return 0
-    fi
-  fi
-
-  # Quick check: does ADC file exist and is it recent?
-  if [[ $force == false ]] && [[ -f "$adc_file" ]]; then
-    # Try a quick token check
-    if gcloud auth application-default print-access-token &>/dev/null; then
-      echo "$now" > "$cache_file"
-      [[ $quiet == false ]] && echo "Already logged in to Google Cloud."
-      return 0
-    fi
-  fi
-
-  # ADC login with all scopes (single browser auth)
-  echo "Logging into Google Cloud..."
-  gcloud auth application-default login \
-    --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets && \
-  echo "$now" > "$cache_file"
+  esac
 }
 
 # =============================================================================
