@@ -234,23 +234,17 @@ gsecret() {
 }
 
 # GCP: Login helper
-# Usage: glogin [-a|-c]
+# Usage: glogin [-c]
 glogin() {
   case "$1" in
-    -a|--adc)
-      # ADC auth with all scopes (for kubectl, apps, scripts)
-      gcloud auth application-default login \
-        --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets
-      ;;
     -c|--cli)
       # CLI auth (for gcloud commands)
       gcloud auth login
       ;;
     *)
-      echo "Usage: glogin [-a|-c]" >&2
-      echo "  -a, --adc  ADC auth (for kubectl, apps, scripts)" >&2
-      echo "  -c, --cli  CLI auth (for gcloud commands)" >&2
-      return 1
+      # ADC auth with all scopes (for kubectl, apps, scripts)
+      gcloud auth application-default login \
+        --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets
       ;;
   esac
 }
