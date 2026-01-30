@@ -84,26 +84,6 @@ source ~/Code/dotfiles/aliases.sh
 # Startup (backgrounded to avoid blocking, skipped in Claude Code)
 # =============================================================================
 if [[ -z "$CLAUDECODE" ]]; then
-  # Check ADC validity and auto-login if needed
-  (
-    adc_file="$HOME/.config/gcloud/application_default_credentials.json"
-    needs_login=false
-
-    if [[ ! -f "$adc_file" ]]; then
-      needs_login=true
-    else
-      now=$(date +%s)
-      file_age=$(( now - $(stat -f %m "$adc_file") ))
-      if (( file_age > 3600 )); then  # Older than 1 hour
-        needs_login=true
-      elif ! gcloud auth application-default print-access-token &>/dev/null; then
-        needs_login=true
-      fi
-    fi
-
-    if [[ $needs_login == true ]]; then
-      glogin &>/dev/null
-    fi
-  ) &
+  (glogin -q &)
   (brew update >/dev/null 2>&1 &)
 fi

@@ -234,19 +234,52 @@ gsecret() {
 }
 
 # GCP: Login helper
-# Usage: glogin [-c]
+# Usage: glogin [-f] [-q] [-c]
 glogin() {
-  case "$1" in
-    -c|--cli)
-      # CLI auth (for gcloud commands)
-      gcloud auth login
-      ;;
-    *)
-      # ADC auth with all scopes (for kubectl, apps, scripts)
-      gcloud auth application-default login \
-        --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets
-      ;;
-  esac
+  local force=false
+  local quiet=false
+  local cli=false
+
+  while getopts ":fqc" opt; do
+    case ${opt} in
+      f) force=true ;;
+      q) quiet=true ;;
+      c) cli=true ;;
+    esac
+  done
+
+  # CLI auth
+  if [[ $cli == true ]]; then
+    gcloud auth login
+    return $?
+  fi
+
+  # ADC auth - check if needed
+  local adc_file="$HOME/.config/gcloud/application_default_credentials.json"
+  local needs_login=false
+
+  if [[ $force == true ]]; then
+    needs_login=true
+  elif [[ ! -f "$adc_file" ]]; then
+    needs_login=true
+  else
+    local now=$(date +%s)
+    local file_age=$(( now - $(stat -f %m "$adc_file") ))
+    if (( file_age > 3600 )); then
+      needs_login=true
+    elif ! gcloud auth application-default print-access-token &>/dev/null; then
+      needs_login=true
+    fi
+  fi
+
+  if [[ $needs_login == true ]]; then
+    [[ $quiet == false ]] && echo "Logging into Google Cloud..."
+    gcloud auth application-default login \
+      --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets \
+      ${quiet:+--quiet}
+  else
+    [[ $quiet == false ]] && echo "GCP ADC is valid."
+  fi
 }
 
 # =============================================================================
