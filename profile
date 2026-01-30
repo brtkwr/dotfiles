@@ -8,7 +8,7 @@ source ~/.secrets
 # =============================================================================
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_AUTO_UPDATE=1
-export BREW_PREFIX="/opt/homebrew"  # Cache brew prefix - avoids subprocess calls
+export BREW_PREFIX="/opt/homebrew" # Cache brew prefix - avoids subprocess calls
 export DYLD_LIBRARY_PATH="$BREW_PREFIX/lib:$DYLD_LIBRARY_PATH"
 
 # =============================================================================
@@ -26,9 +26,8 @@ export GOBIN="$HOME/.local/bin"
 export TF_CLI_ARGS_plan="-parallelism=50"
 export TF_CLI_ARGS_apply="-parallelism=50"
 
-# GCP - use ADC for everything (single auth with all scopes)
+# GCP
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
 
 # 1Password SSH Agent
 export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
@@ -55,12 +54,22 @@ eval "$(fnm env)"
 
 # nvm compatibility wrapper
 nvm() {
-    case "$1" in
-        ls) shift; fnm list "$@" ;;
-        ls-remote) shift; fnm list-remote "$@" ;;
-        alias) shift; [[ "$1" == "default" ]] && shift; fnm default "$@" ;;
-        *) fnm "$@" ;;
-    esac
+  case "$1" in
+  ls)
+    shift
+    fnm list "$@"
+    ;;
+  ls-remote)
+    shift
+    fnm list-remote "$@"
+    ;;
+  alias)
+    shift
+    [[ "$1" == "default" ]] && shift
+    fnm default "$@"
+    ;;
+  *) fnm "$@" ;;
+  esac
 }
 
 # Google Cloud SDK (PATH only - completions loaded in .zshrc)
@@ -75,6 +84,6 @@ source ~/Code/dotfiles/aliases.sh
 # Startup (backgrounded to avoid blocking, skipped in Claude Code)
 # =============================================================================
 if [[ -z "$CLAUDECODE" ]]; then
-    (glogin -q &)
-    (brew update >/dev/null 2>&1 &)
+  (glogin -q &)
+  (brew update >/dev/null 2>&1 &)
 fi
