@@ -277,9 +277,8 @@ glogin() {
     fi
   fi
 
-  # Need to login - CLI auth + ADC with all scopes
+  # ADC login with all scopes (single browser auth)
   echo "Logging into Google Cloud..."
-  gcloud auth login && \
   gcloud auth application-default login \
     --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets && \
   echo "$now" > "$cache_file"
