@@ -234,53 +234,55 @@ gsecret() {
 }
 
 # GCP: Auto login
-# Usage: glogin [-f] [-q] [-s]
+# Usage: glogin [-f] [-q]
 glogin() {
   local force=false
   local quiet=false
-  local sheets=false
   local opt
 
-  while getopts ":fqs" opt; do
+  while getopts ":fq" opt; do
     case ${opt} in
     f) force=true ;;
     q) quiet=true ;;
-    s) sheets=true ;;
     \?)
-      echo "Usage: glogin [-f] [-q] [-s]" >&2
+      echo "Usage: glogin [-f] [-q]" >&2
       echo "  -f  Force re-login" >&2
       echo "  -q  Quiet mode" >&2
-      echo "  -s  Include Google Sheets scope (requires extra browser auth)" >&2
       return 1
       ;;
     esac
   done
 
-  if ! logged_in=$(yes | gcloud auth print-identity-token --verbosity=debug 2>&1 | grep 'POST /token .* 200'); then
-    force=true
-  fi
+  # Check if token is valid (file-based check, no network call)
+  local adc_file="${HOME}/.config/gcloud/application_default_credentials.json"
+  local cache_file="${HOME}/.config/gcloud/.glogin_check"
+  local now=$(date +%s)
+  local cache_age=3600  # Check at most once per hour
 
-  if [[ $force == true ]]; then
-    echo "Time to log back into Google Cloud..."
-    gcloud auth login --update-adc
-  else
-    if [[ $quiet == false ]]; then
-      account=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
-      echo "Already logged in to Google Cloud as $account."
+  if [[ -f "$cache_file" ]]; then
+    local last_check=$(cat "$cache_file")
+    if (( now - last_check < cache_age )) && [[ $force == false ]]; then
+      [[ $quiet == false ]] && echo "GCP auth checked recently, skipping."
+      return 0
     fi
   fi
 
-  if [[ $sheets == true ]]; then
-    current_scopes=$(curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" | jq -r '.scope // empty')
-    if [[ "$current_scopes" == *"spreadsheets"* ]] && [[ "$current_scopes" == *"cloud-platform"* ]]; then
-      if [[ $quiet == false ]]; then
-        echo "ADC already has spreadsheets and cloud-platform scopes."
-      fi
-    else
-      echo "Adding Google Sheets scope..."
-      gcloud auth application-default login --scopes=https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform
+  # Quick check: does ADC file exist and is it recent?
+  if [[ $force == false ]] && [[ -f "$adc_file" ]]; then
+    # Try a quick token check
+    if gcloud auth application-default print-access-token &>/dev/null; then
+      echo "$now" > "$cache_file"
+      [[ $quiet == false ]] && echo "Already logged in to Google Cloud."
+      return 0
     fi
   fi
+
+  # Need to login - single flow with all scopes
+  echo "Logging into Google Cloud..."
+  gcloud auth login --update-adc && \
+  gcloud auth application-default login \
+    --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets && \
+  echo "$now" > "$cache_file"
 }
 
 # =============================================================================

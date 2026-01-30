@@ -74,6 +74,6 @@ source ~/Code/dotfiles/aliases.sh
 # Startup (backgrounded to avoid blocking, skipped in Claude Code)
 # =============================================================================
 if [[ -z "$CLAUDECODE" ]]; then
-    (glogin -qs &)
+    (glogin -q &)
     (brew update >/dev/null 2>&1 &)
 fi
