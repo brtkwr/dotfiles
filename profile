@@ -102,7 +102,7 @@ if [[ -z "$CLAUDECODE" ]]; then
     fi
 
     if [[ $needs_login == true ]]; then
-      glogin
+      glogin &>/dev/null
     fi
   ) &
   (brew update >/dev/null 2>&1 &)
