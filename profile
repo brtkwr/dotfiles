@@ -73,5 +73,5 @@ source ~/Code/dotfiles/aliases.sh
 # =============================================================================
 # Startup (backgrounded to avoid blocking)
 # =============================================================================
-(glogin -qs &)
+[[ -z "$CLAUDECODE" ]] && (glogin -qs &)
 (brew update >/dev/null 2>&1 &)
