@@ -27,10 +27,9 @@ eval "$(fzf --zsh)"
 # ------------------------------------------------------------------------------
 eval "$(direnv hook zsh)"
 
-# google-cloud-sdk
+# google-cloud-sdk (completions only - PATH set in .profile)
 # ------------------------------------------------------------------------------
-source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+source "$BREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"
 
 # Docker CLI completions
 # ------------------------------------------------------------------------------

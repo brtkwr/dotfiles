@@ -8,7 +8,8 @@ source ~/.secrets
 # =============================================================================
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_AUTO_UPDATE=1
-export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
+export BREW_PREFIX="/opt/homebrew"  # Cache brew prefix - avoids subprocess calls
+export DYLD_LIBRARY_PATH="$BREW_PREFIX/lib:$DYLD_LIBRARY_PATH"
 
 # =============================================================================
 # Environment Variables
@@ -48,13 +49,21 @@ export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 # Tool Initialisations
 # =============================================================================
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+# fnm (fast node manager)
+eval "$(fnm env)"
 
-# Google Cloud SDK
-source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+# nvm compatibility wrapper
+nvm() {
+    case "$1" in
+        ls) shift; fnm list "$@" ;;
+        ls-remote) shift; fnm list-remote "$@" ;;
+        alias) shift; [[ "$1" == "default" ]] && shift; fnm default "$@" ;;
+        *) fnm "$@" ;;
+    esac
+}
+
+# Google Cloud SDK (PATH only - completions loaded in .zshrc)
+source "$BREW_PREFIX/share/google-cloud-sdk/path.zsh.inc"
 
 # =============================================================================
 # Aliases and Functions
@@ -62,7 +71,7 @@ source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source ~/Code/dotfiles/aliases.sh
 
 # =============================================================================
-# Startup
+# Startup (backgrounded to avoid blocking)
 # =============================================================================
-glogin -qs
+(glogin -qs &)
 (brew update >/dev/null 2>&1 &)

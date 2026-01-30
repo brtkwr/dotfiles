@@ -16,13 +16,20 @@ Usage: wt [<name>] [-e] [-h]
 Git worktree helper with fzf selection.
 
 Options:
-  <name>      Create a new worktree with branch name <name>
+  <name>      Create or switch to worktree with branch <name>
   -e          Copy .envrc from root and run direnv allow (use with name)
   -h          Show this help message
 
+Interactive mode (no args):
+  ENTER       cd into selected worktree
+  CTRL-A      Create new worktree from search query
+  CTRL-D      Delete worktree
+  CTRL-R      Move worktree to new path
+  CTRL-L      View full git log with diffs
+
 Examples:
-  wt                  Fuzzy select and cd to a worktree (use CTRL-D to delete)
-  wt feature-x        Create worktree 'feature-x' and cd into it
+  wt                  Open interactive selector
+  wt feature-x        Create/switch to 'feature-x' worktree
   wt feature-x -e     Same as above, plus setup direnv
 USAGE
   }
@@ -50,6 +57,15 @@ USAGE
 
   if [[ -n "$name" ]]; then
     local root=$(git rev-parse --show-toplevel)
+    local branch_name=$(basename "$name")
+
+    # Check if worktree with this branch already exists
+    local existing_path=$(git worktree list | grep -E "\[${branch_name}\]$" | awk '{print $1}')
+    if [[ -n "$existing_path" ]]; then
+      cd "$existing_path"
+      return 0
+    fi
+
     local new_path
     # If user specified a path with /, use it as-is; otherwise put it in .worktrees/
     if [[ "$name" == */* ]]; then
@@ -59,30 +75,89 @@ USAGE
       [[ ! -d "$worktrees_dir" ]] && mkdir -p "$worktrees_dir"
       new_path="$worktrees_dir/$name"
     fi
-    git worktree add "$new_path" -b "$(basename "$name")" && cd "$new_path"
+    git worktree add "$new_path" -b "$branch_name" && cd "$new_path"
     if $copy_envrc && [[ -f "$root/.envrc" ]]; then
       cp "$root/.envrc" "$new_path/.envrc"
       direnv allow
     fi
   else
-    local selected=$(git worktree list | \
-      fzf --height 40% --reverse \
-          --header 'ENTER: cd | CTRL-D: delete | CTRL-L: full log with diffs' \
-          --preview 'git -C $(echo {} | awk '\''{print $1}'\'') log --stat --format=medium --color -10' \
-          --preview-window 'right:60%:wrap' \
-          --bind 'ctrl-d:execute(
-            main_wt=$(git worktree list | head -1 | awk '\''{print $1}'\''); \
-            wt_path=$(echo {} | awk '\''{print $1}'\''); \
-            if [[ "$wt_path" != "$main_wt" ]]; then \
-              git worktree remove "$wt_path" && echo "Deleted $wt_path" || echo "Failed to delete $wt_path"; \
-            else \
-              echo "Error: cannot delete main worktree"; \
-            fi; \
-            read -p "Press enter to continue..."
-          )+reload(git worktree list)' \
-          --bind 'ctrl-l:execute(git -C $(echo {} | awk '\''{print $1}'\'') log -p --color | less -R)' | \
-      awk '{print $1}')
-    [[ -n "$selected" ]] && cd "$selected"
+    while true; do
+      local result=$(git worktree list | \
+        fzf --height 40% --reverse \
+            --header 'ENTER: cd | CTRL-A: create from query | CTRL-D: delete | CTRL-R: move | CTRL-L: log' \
+            --preview 'git -C $(echo {} | awk '\''{print $1}'\'') log --stat --format=medium --color -10' \
+            --preview-window 'right:60%:wrap' \
+            --print-query \
+            --expect=ctrl-a,ctrl-d,ctrl-r \
+            --bind 'ctrl-l:execute(git -C $(echo {} | awk '\''{print $1}'\'') log -p --color | less -R)')
+
+      local query=$(echo "$result" | sed -n '1p')
+      local key=$(echo "$result" | sed -n '2p')
+      local selection=$(echo "$result" | sed -n '3p')
+
+      case "$key" in
+        ctrl-a)
+          [[ -z "$query" ]] && continue
+          local root=$(git rev-parse --show-toplevel)
+          local worktrees_dir="$root/.worktrees"
+          mkdir -p "$worktrees_dir"
+          local new_path="$worktrees_dir/$query"
+          if git worktree add "$new_path" -b "$query"; then
+            cd "$new_path"
+            return 0
+          fi
+          sleep 1
+          ;;
+        ctrl-d)
+          [[ -z "$selection" ]] && continue
+          local main_wt=$(git worktree list | head -1 | awk '{print $1}')
+          local wt_path=$(echo "$selection" | awk '{print $1}')
+          if [[ "$wt_path" == "$main_wt" ]]; then
+            echo "Error: cannot delete main worktree"
+            sleep 1
+            continue
+          fi
+          if git worktree remove "$wt_path"; then
+            echo "Deleted $wt_path"
+            sleep 1
+          fi
+          ;;
+        ctrl-r)
+          [[ -z "$selection" ]] && continue
+          local main_wt=$(git worktree list | head -1 | awk '{print $1}')
+          local wt_path=$(echo "$selection" | awk '{print $1}')
+          if [[ "$wt_path" == "$main_wt" ]]; then
+            echo "Error: cannot move main worktree"
+            sleep 1
+            continue
+          fi
+          local root=$(git rev-parse --show-toplevel)
+          echo -n "New name (or path): "
+          read new_path </dev/tty
+          [[ -z "$new_path" ]] && continue
+          local full_new_path
+          # Absolute path - use as-is
+          if [[ "$new_path" == /* ]]; then
+            full_new_path="$new_path"
+          # Relative path with slash - relative to repo root
+          elif [[ "$new_path" == */* ]]; then
+            full_new_path="$root/$new_path"
+          # Just a name - keep in .worktrees/
+          else
+            mkdir -p "$root/.worktrees"
+            full_new_path="$root/.worktrees/$new_path"
+          fi
+          if git worktree move "$wt_path" "$full_new_path"; then
+            echo "Moved to $full_new_path"
+            sleep 1
+          fi
+          ;;
+        *)
+          [[ -n "$selection" ]] && cd "$(echo "$selection" | awk '{print $1}')"
+          return 0
+          ;;
+      esac
+    done
   fi
 }
 

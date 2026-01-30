@@ -24,6 +24,9 @@ link() {
 
 echo "Installing dotfiles from $DOTFILES_DIR"
 
+# Homebrew
+link "$DOTFILES_DIR/Brewfile" "$HOME/.Brewfile"
+
 # Shell
 link "$DOTFILES_DIR/zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/zprofile" "$HOME/.zprofile"

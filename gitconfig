@@ -16,7 +16,7 @@
 [alias]
 	please = push --force-with-lease
   wt = worktree
-  cm = commit
+  uc = !(git add -u && git commit $1)
   cs = !SKIP=commit-msg git commit
   cn = commit --no-verify
   cp = !git branch --show-current >> .gitbranch
@@ -39,6 +39,7 @@
 	path = ~/Code/two/.gitconfig
 [core]
 	editor = nvim
+	excludesfile = /Users/brtkwr/.gitignore_global
     # pager = delta
 [interactive]
     # diffFilter = delta --color-only
