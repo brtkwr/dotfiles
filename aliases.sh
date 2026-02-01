@@ -350,8 +350,7 @@ alias jqx="jq -r '.severity + \" | \" + .event'"
 
 unalias claude 2>/dev/null
 claude() {
-  source ~/.claude.secret
-  command claude "$@"
+  (source ~/.claude.secret && command claude "$@")
 }
 
 alias cc="claude"
@@ -360,8 +359,7 @@ alias claudey="ccy"
 
 unalias ccs 2>/dev/null
 ccs() {
-  source ~/.claude.secret
-  command ccs "$@"
+  (source ~/.claude.secret && command ccs "$@")
 }
 
 unalias ccsy 2>/dev/null
