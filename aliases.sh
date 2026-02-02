@@ -81,6 +81,9 @@ USAGE
       direnv allow
     fi
   else
+    # Prune any stale worktree entries before showing the list
+    git worktree prune -v 2>/dev/null
+
     while true; do
       local result=$(git worktree list | \
         fzf --height 40% --reverse \
