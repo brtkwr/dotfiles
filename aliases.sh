@@ -285,6 +285,7 @@ glogin() {
   if [[ $needs_login == true ]]; then
     [[ $quiet == false ]] && echo "Logging into Google Cloud..."
     gcloud auth application-default login \
+      --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
       --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets \
       ${quiet:+--quiet}
   else
