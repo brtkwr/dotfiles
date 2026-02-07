@@ -8,6 +8,7 @@ When asked to update user memory/instructions, edit the appropriate source file:
 ## General Rules
 
 - ALWAYS load project specific @AGENTS.md
+- `@` file references in CLAUDE.md/AGENTS.md must be on their own line to be resolved — inline references within a sentence won't work
 - Always mention the specific model when signing git commits and PRs (e.g., Claude Opus 4.5, Claude Sonnet 4)
 - Always use British english unless asked otherwise
 - All my code lives under ~/Code/
@@ -38,6 +39,16 @@ After changes, commit and push to dotfiles repo.
 - For trivial changes, use --no-verify flag when making commits
 - **IMPORTANT**: Always create worktrees in a `.worktrees/` subdirectory, never at the repository root
 - Always add `.worktrees/` to .gitignore if it doesn't already exist
+
+### **USE WORKTREES FOR EVERY NEW FEATURE**
+
+**Always create a git worktree for each new feature or task.** This prevents:
+- Stashing/unstashing conflicts when switching between work
+- Accidentally mixing changes from different features
+- Having to checkout branches and lose local state
+- The pain of managing multiple in-progress features in a single directory
+
+Worktrees live in `{project_dir}/.worktrees/` - e.g. `/Users/brtkwr/Code/two/checkout-api/.worktrees/my-feature`
 
 ## Blog Posts
 
