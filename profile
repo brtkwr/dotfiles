@@ -78,7 +78,7 @@ source "$BREW_PREFIX/share/google-cloud-sdk/path.zsh.inc"
 # =============================================================================
 # Aliases and Functions
 # =============================================================================
-source ~/Code/dotfiles/aliases.sh
+source ~/Code/brtkwr/dotfiles/aliases.sh
 
 # =============================================================================
 # Startup (backgrounded to avoid blocking, skipped in Claude Code)

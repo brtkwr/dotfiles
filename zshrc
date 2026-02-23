@@ -13,11 +13,11 @@ eval "$(starship init zsh)"
 
 # Git aliases (essential only)
 # ------------------------------------------------------------------------------
-source ~/Code/dotfiles/git-aliases.zsh
+source ~/Code/brtkwr/dotfiles/git-aliases.zsh
 
 # Shell aliases and functions
 # ------------------------------------------------------------------------------
-source ~/Code/dotfiles/aliases.sh
+source ~/Code/brtkwr/dotfiles/aliases.sh
 
 # Fuzzy finder
 # ------------------------------------------------------------------------------

@@ -2,6 +2,6 @@
 
 @~/.claude/CLAUDE.public.md
 
-@~/.claude/CLAUDE.private.md
+@~/.claude/CLAUDE.tone.md
 
 @~/.claude/CLAUDE.work.md

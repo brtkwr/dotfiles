@@ -311,6 +311,18 @@ ksync() {
     --type merge
 }
 
+# Kubernetes: Node count across clusters
+knodes() {
+  setopt local_options no_monitor
+  local tmp=$(mktemp -d)
+  for c in pi beta alpha delta; do
+    (printf "%-8s%s\n" "$c" "$(k get nodes --context $c 2>/dev/null | grep gke | wc -l | tr -d ' ')" > "$tmp/$c") &
+  done
+  wait
+  for c in pi beta alpha delta; do cat "$tmp/$c"; done
+  rm -rf "$tmp"
+}
+
 # =============================================================================
 # Neovim Functions
 # =============================================================================
