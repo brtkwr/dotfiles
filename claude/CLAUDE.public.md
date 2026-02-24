@@ -30,3 +30,4 @@ Config files are managed in `~/Code/brtkwr/dotfiles/`. When modifying any of the
 
 - Proactively suggest writing a blog post when a session involves significant learning (migrations, non-obvious gotchas, debugging with interesting root causes)
 - Check ~/Code/brtkwr/brtkwr.com/AGENTS.md for style guidelines. Genericise all company-specific details.
+- **Always create a branch and raise a PR** — never push directly to main
