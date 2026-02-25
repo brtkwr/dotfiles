@@ -1,3 +1,9 @@
+# Homebrew dynamic libraries — duplicated from .profile because macOS SIP
+# strips DYLD_* vars before the shell starts. .profile sets it but SIP removes
+# it; .zshrc runs after so this export actually sticks.
+# See: https://hynek.me/articles/macos-dyld-env/
+export DYLD_LIBRARY_PATH="/opt/homebrew/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+
 # Completion caching - only rebuild once a day for performance
 # ------------------------------------------------------------------------------
 autoload -Uz compinit
