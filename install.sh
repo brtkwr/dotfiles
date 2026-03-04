@@ -32,6 +32,9 @@ link "$DOTFILES_DIR/zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/zprofile" "$HOME/.zprofile"
 link "$DOTFILES_DIR/profile" "$HOME/.profile"
 
+# Secrets template (1Password)
+link "$DOTFILES_DIR/secrets.tpl" "$HOME/.secrets.tpl"
+
 # Git
 link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 
