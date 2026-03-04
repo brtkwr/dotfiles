@@ -385,3 +385,6 @@ ccsy() {
 
 alias ccspeak="rm ~/.claude/.silence 2> /dev/null"
 alias ccquiet="touch ~/.claude/.silence"
+
+# 1Password secrets
+op-refresh() { op inject -i ~/.secrets.tpl > ~/.secrets.cache && source ~/.secrets.cache && echo "secrets refreshed"; }
