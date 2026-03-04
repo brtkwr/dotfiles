@@ -1,13 +1,7 @@
 # =============================================================================
 # Secrets (1Password)
 # =============================================================================
-# Cache resolved secrets per login session to avoid repeated biometric prompts.
-# Re-run `op-refresh` to update after changing secrets in 1Password.
-SECRETS_CACHE="$HOME/.secrets.cache"
-if [ ! -f "$SECRETS_CACHE" ]; then
-  op inject -i ~/.secrets.tpl > "$SECRETS_CACHE" 2>/dev/null
-fi
-source "$SECRETS_CACHE"
+eval "$(op inject -i ~/.secrets.tpl)"
 
 # =============================================================================
 # Homebrew (early init - needed for brew --prefix)
