@@ -33,6 +33,7 @@
 	pm = "!f() { base=${1:-master}; git fetch; git worktree list --porcelain | awk '/^worktree/ {wt=$2} /^branch/ {br=substr($0,8); if(wt && br && system(\"git merge-base --is-ancestor \" br \" origin/'$base' 2>/dev/null\")==0) {print \"Removing: \" wt \" (\" br \")\"; system(\"git worktree remove \\\"\" wt \"\\\"\")}}'; git branch --merged origin/$base | grep -v \"^\\*\" | grep -v \"$base$\" | xargs -r git branch -d; }; f"
 [init]
 	defaultBranch = main
+	objectFormat = sha256
 # [merge]
 # 	conflictstyle = zdiff3
 [includeIf "gitdir:~/Code/two/"]
@@ -52,3 +53,9 @@
     # light = true
 [merge]
     conflictstyle = zdiff3
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

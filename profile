@@ -35,6 +35,8 @@ export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agen
 # Tools
 export AIDER_MODEL="gemini"
 export MCP_TOOL_TIMEOUT=10000
+export CLAUDE_CODE_NO_FLICKER=1
+export ARGOCD_OPTS="--core"
 
 # =============================================================================
 # PATH
@@ -87,3 +89,8 @@ if [[ -z "$CLAUDECODE" ]]; then
   (glogin -q &)
   (brew update >/dev/null 2>&1 &)
 fi
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/brtkwr/.lmstudio/bin"
+# End of LM Studio CLI section
+

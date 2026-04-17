@@ -32,7 +32,6 @@ brew "argocd"
 brew "helm"
 brew "k9s"
 brew "kubectx"
-brew "kubegraf/tap/kubegraf"
 brew "stern"
 
 # Cloud & Infra
