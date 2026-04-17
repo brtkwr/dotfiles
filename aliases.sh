@@ -85,80 +85,80 @@ USAGE
     git worktree prune -v 2>/dev/null
 
     while true; do
-      local result=$(git worktree list | \
+      local result=$(git worktree list |
         fzf --height 40% --reverse \
-            --header 'ENTER: cd | CTRL-A: create from query | CTRL-D: delete | CTRL-R: move | CTRL-L: log' \
-            --preview 'git -C $(echo {} | awk '\''{print $1}'\'') log --stat --format=medium --color -10' \
-            --preview-window 'right:60%:wrap' \
-            --print-query \
-            --expect=ctrl-a,ctrl-d,ctrl-r \
-            --bind 'ctrl-l:execute(git -C $(echo {} | awk '\''{print $1}'\'') log -p --color | less -R)')
+          --header 'ENTER: cd | CTRL-A: create from query | CTRL-D: delete | CTRL-R: move | CTRL-L: log' \
+          --preview 'git -C $(echo {} | awk '\''{print $1}'\'') log --stat --format=medium --color -10' \
+          --preview-window 'right:60%:wrap' \
+          --print-query \
+          --expect=ctrl-a,ctrl-d,ctrl-r \
+          --bind 'ctrl-l:execute(git -C $(echo {} | awk '\''{print $1}'\'') log -p --color | less -R)')
 
       local query=$(echo "$result" | sed -n '1p')
       local key=$(echo "$result" | sed -n '2p')
       local selection=$(echo "$result" | sed -n '3p')
 
       case "$key" in
-        ctrl-a)
-          [[ -z "$query" ]] && continue
-          local root=$(git rev-parse --show-toplevel)
-          local worktrees_dir="$root/.worktrees"
-          mkdir -p "$worktrees_dir"
-          local new_path="$worktrees_dir/$query"
-          if git worktree add "$new_path" -b "$query"; then
-            cd "$new_path"
-            return 0
-          fi
-          sleep 1
-          ;;
-        ctrl-d)
-          [[ -z "$selection" ]] && continue
-          local main_wt=$(git worktree list | head -1 | awk '{print $1}')
-          local wt_path=$(echo "$selection" | awk '{print $1}')
-          if [[ "$wt_path" == "$main_wt" ]]; then
-            echo "Error: cannot delete main worktree"
-            sleep 1
-            continue
-          fi
-          if git worktree remove "$wt_path"; then
-            echo "Deleted $wt_path"
-            sleep 1
-          fi
-          ;;
-        ctrl-r)
-          [[ -z "$selection" ]] && continue
-          local main_wt=$(git worktree list | head -1 | awk '{print $1}')
-          local wt_path=$(echo "$selection" | awk '{print $1}')
-          if [[ "$wt_path" == "$main_wt" ]]; then
-            echo "Error: cannot move main worktree"
-            sleep 1
-            continue
-          fi
-          local root=$(git rev-parse --show-toplevel)
-          echo -n "New name (or path): "
-          read new_path </dev/tty
-          [[ -z "$new_path" ]] && continue
-          local full_new_path
-          # Absolute path - use as-is
-          if [[ "$new_path" == /* ]]; then
-            full_new_path="$new_path"
-          # Relative path with slash - relative to repo root
-          elif [[ "$new_path" == */* ]]; then
-            full_new_path="$root/$new_path"
-          # Just a name - keep in .worktrees/
-          else
-            mkdir -p "$root/.worktrees"
-            full_new_path="$root/.worktrees/$new_path"
-          fi
-          if git worktree move "$wt_path" "$full_new_path"; then
-            echo "Moved to $full_new_path"
-            sleep 1
-          fi
-          ;;
-        *)
-          [[ -n "$selection" ]] && cd "$(echo "$selection" | awk '{print $1}')"
+      ctrl-a)
+        [[ -z "$query" ]] && continue
+        local root=$(git rev-parse --show-toplevel)
+        local worktrees_dir="$root/.worktrees"
+        mkdir -p "$worktrees_dir"
+        local new_path="$worktrees_dir/$query"
+        if git worktree add "$new_path" -b "$query"; then
+          cd "$new_path"
           return 0
-          ;;
+        fi
+        sleep 1
+        ;;
+      ctrl-d)
+        [[ -z "$selection" ]] && continue
+        local main_wt=$(git worktree list | head -1 | awk '{print $1}')
+        local wt_path=$(echo "$selection" | awk '{print $1}')
+        if [[ "$wt_path" == "$main_wt" ]]; then
+          echo "Error: cannot delete main worktree"
+          sleep 1
+          continue
+        fi
+        if git worktree remove "$wt_path"; then
+          echo "Deleted $wt_path"
+          sleep 1
+        fi
+        ;;
+      ctrl-r)
+        [[ -z "$selection" ]] && continue
+        local main_wt=$(git worktree list | head -1 | awk '{print $1}')
+        local wt_path=$(echo "$selection" | awk '{print $1}')
+        if [[ "$wt_path" == "$main_wt" ]]; then
+          echo "Error: cannot move main worktree"
+          sleep 1
+          continue
+        fi
+        local root=$(git rev-parse --show-toplevel)
+        echo -n "New name (or path): "
+        read new_path </dev/tty
+        [[ -z "$new_path" ]] && continue
+        local full_new_path
+        # Absolute path - use as-is
+        if [[ "$new_path" == /* ]]; then
+          full_new_path="$new_path"
+        # Relative path with slash - relative to repo root
+        elif [[ "$new_path" == */* ]]; then
+          full_new_path="$root/$new_path"
+        # Just a name - keep in .worktrees/
+        else
+          mkdir -p "$root/.worktrees"
+          full_new_path="$root/.worktrees/$new_path"
+        fi
+        if git worktree move "$wt_path" "$full_new_path"; then
+          echo "Moved to $full_new_path"
+          sleep 1
+        fi
+        ;;
+      *)
+        [[ -n "$selection" ]] && cd "$(echo "$selection" | awk '{print $1}')"
+        return 0
+        ;;
       esac
     done
   fi
@@ -237,24 +237,37 @@ gsecret() {
 }
 
 # GCP: Login helper
-# Usage: glogin [-f] [-q] [-c] [-s]
+# Usage: glogin [-f] [-q] [-s] [-S]
+#   -f  Force re-login even if credentials are valid
+#   -q  Quiet mode
+#   -s  Show current ADC scopes
+#   -S  Include Sheets scope (uses application-default login with custom OAuth client)
 glogin() {
   local force=false
   local quiet=false
-  local cli=false
-  local scopes=false
+  local show_scopes=false
+  local sheets=false
 
-  while getopts ":fqcs" opt; do
+  while getopts ":fqsSh" opt; do
     case ${opt} in
-      f) force=true ;;
-      q) quiet=true ;;
-      c) cli=true ;;
-      s) scopes=true ;;
+    f) force=true ;;
+    q) quiet=true ;;
+    s) show_scopes=true ;;
+    S) sheets=true ;;
+    h)
+      echo "Usage: glogin [-f] [-q] [-s] [-S] [-h]"
+      echo "  -f  Force re-login even if credentials are valid"
+      echo "  -q  Quiet mode"
+      echo "  -s  Show current ADC scopes"
+      echo "  -S  Include Sheets scope (uses custom OAuth client)"
+      echo "  -h  Show this help"
+      return 0
+      ;;
     esac
   done
 
   # Show current scopes
-  if [[ $scopes == true ]]; then
+  if [[ $show_scopes == true ]]; then
     local token=$(gcloud auth application-default print-access-token 2>/dev/null)
     if [[ -n "$token" ]]; then
       curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$token" | jq -r '.scope // "No scopes found"'
@@ -264,13 +277,17 @@ glogin() {
     return $?
   fi
 
-  # CLI auth
-  if [[ $cli == true ]]; then
-    gcloud auth login
+  # Sheets scope always triggers login (needs custom OAuth client)
+  if [[ $sheets == true ]]; then
+    [[ $quiet == false ]] && echo "Logging into Google Cloud (with Sheets scope)..."
+    gcloud auth application-default login \
+      --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
+      --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets \
+      ${quiet:+--quiet}
     return $?
   fi
 
-  # ADC auth - check if needed
+  # Check if login is needed
   local adc_file="$HOME/.config/gcloud/application_default_credentials.json"
   local needs_login=false
 
@@ -284,10 +301,7 @@ glogin() {
 
   if [[ $needs_login == true ]]; then
     [[ $quiet == false ]] && echo "Logging into Google Cloud..."
-    gcloud auth application-default login \
-      --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
-      --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets \
-      ${quiet:+--quiet}
+    gcloud auth login --update-adc ${quiet:+--quiet}
   else
     [[ $quiet == false ]] && echo "GCP ADC is valid."
   fi
@@ -316,7 +330,7 @@ knodes() {
   setopt local_options no_monitor
   local tmp=$(mktemp -d)
   for c in pi beta alpha delta; do
-    (printf "%-8s%s\n" "$c" "$(k get nodes --context $c 2>/dev/null | grep gke | wc -l | tr -d ' ')" > "$tmp/$c") &
+    (printf "%-8s%s\n" "$c" "$(k get nodes --context $c 2>/dev/null | grep gke | wc -l | tr -d ' ')" >"$tmp/$c") &
   done
   wait
   for c in pi beta alpha delta; do cat "$tmp/$c"; done
@@ -369,9 +383,7 @@ claude() {
   (source ~/.claude.secret && command claude "$@")
 }
 
-alias cc="claude"
-alias ccy="cc --allow-dangerously-skip-permissions --permission-mode plan"
-alias claudey="ccy"
+alias cc="claude --permission-mode auto --allow-dangerously-skip-permissions"
 
 unalias ccs 2>/dev/null
 ccs() {
@@ -380,11 +392,14 @@ ccs() {
 
 unalias ccsy 2>/dev/null
 ccsy() {
-  ccs "$@" -- --allow-dangerously-skip-permissions --permission-mode plan
+  ccs "$@" -- --permission-mode auto --allow-dangerously-skip-permissions
 }
 
 alias ccspeak="rm ~/.claude/.silence 2> /dev/null"
 alias ccquiet="touch ~/.claude/.silence"
 
+alias ccls="cswap --list"
+alias ccsw="cswap --switch"
+
 # 1Password secrets
-op-refresh() { op inject -i ~/.secrets.tpl > ~/.secrets.cache && source ~/.secrets.cache && echo "secrets refreshed"; }
+op-refresh() { op inject -i ~/.secrets.tpl >~/.secrets.cache && source ~/.secrets.cache && echo "secrets refreshed"; }
