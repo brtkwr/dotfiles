@@ -395,11 +395,19 @@ ccsy() {
   ccs "$@" -- --permission-mode auto --allow-dangerously-skip-permissions
 }
 
-alias ccspeak="rm ~/.claude/.silence 2> /dev/null"
-alias ccquiet="touch ~/.claude/.silence"
+ccspeak() {
+  local f=~/.claude/.silence
+  if [[ -f $f ]]; then
+    rm "$f"
+    echo "ccspeak: ON — claude will speak responses via Stop hook"
+  else
+    touch "$f"
+    echo "ccspeak: OFF — claude will stay silent"
+  fi
+}
 
-alias ccls="cswap --list"
-alias ccsw="cswap --switch"
+alias clist="cswap --list"
+alias cswitch="cswap --switch"
 
 # 1Password secrets
 op-refresh() { op inject -i ~/.secrets.tpl >~/.secrets.cache && source ~/.secrets.cache && echo "secrets refreshed"; }

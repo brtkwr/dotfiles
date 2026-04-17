@@ -1,13 +1,34 @@
 #!/bin/bash
 
-# Read JSON input from stdin
+[[ -f ~/.claude/.silence ]] && exit 0
+
 INPUT=$(cat)
-
-# Extract transcript path from JSON
 TRANSCRIPT_PATH=$(echo "$INPUT" | jq -r '.transcript_path')
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // "default"')
+PID_FILE="/tmp/speak-response-${SESSION_ID}.pid"
 
-# Get the last assistant response from the transcript
-LAST_RESPONSE=$(tail -1 "$TRANSCRIPT_PATH" 2>/dev/null | jq -r 'select(.type == "assistant") | .message.content[] | select(.type == "text") | .text' | tail -1)
+sleep 1
 
-# Speak the response with British accent in background without blocking
-nohup sh -c "stat ~/.claude/.silence >/dev/null 2>&1 || say -- '${LAST_RESPONSE:-Claude needs your input}'" >/dev/null 2>&1 &
+LAST_RESPONSE=$(jq -rs '
+  [.[] | select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text]
+  | map(select(length > 0))
+  | last // ""
+' "$TRANSCRIPT_PATH" 2>/dev/null)
+
+LAST_LINE=$(echo "$LAST_RESPONSE" | awk 'NF{line=$0} END{print line}')
+
+CLEAN=$(echo "$LAST_LINE" | sed -E \
+  -e 's/\[([^]]+)\]\([^)]+\)/\1/g' \
+  -e 's/`([^`]+)`/\1/g' \
+  -e 's/\*\*([^*]+)\*\*/\1/g' \
+  -e 's/(^|[[:space:]])\*([^*]+)\*/\1\2/g' \
+  -e 's/https?:\/\/[^[:space:]]+//g')
+
+MESSAGE="${CLEAN:-Needs your input}"
+
+if [[ -f $PID_FILE ]]; then
+  kill "$(cat "$PID_FILE")" 2>/dev/null
+fi
+
+nohup say -- "$MESSAGE" >/dev/null 2>&1 &
+echo $! >"$PID_FILE"
