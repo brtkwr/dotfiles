@@ -12,6 +12,7 @@ check_link() {
   local dest="$2"
   if [[ ! -L $dest ]]; then
     echo "drift: $dest is not a symlink to $src"
+    echo "  fix: cd $DOTFILES_DIR && ./install.sh"
     ((problems++))
     return
   fi
@@ -19,6 +20,7 @@ check_link() {
   actual=$(readlink "$dest")
   if [[ $actual != "$src" ]]; then
     echo "drift: $dest -> $actual (expected $src)"
+    echo "  fix: cd $DOTFILES_DIR && ./install.sh"
     ((problems++))
   fi
 }
@@ -37,13 +39,16 @@ check_link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
 
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "drift: dotfiles repo has uncommitted changes"
-  git status --short
+  git status --short | sed 's/^/  /'
+  echo "  fix: cd $DOTFILES_DIR && git diff  # review"
+  echo "       git add -A && git commit -m 'sync'"
   ((problems++))
 fi
 
 if git log origin/main..HEAD --oneline 2>/dev/null | grep -q .; then
   echo "drift: dotfiles repo has unpushed commits"
-  git log origin/main..HEAD --oneline
+  git log origin/main..HEAD --oneline | sed 's/^/  /'
+  echo "  fix: cd $DOTFILES_DIR && git push"
   ((problems++))
 fi
 
@@ -51,7 +56,7 @@ if (( problems == 0 )); then
   echo "dotfiles: clean ✓"
 else
   echo
-  echo "$problems drift issue(s). run ./install.sh to fix symlinks, then commit/push changes."
+  echo "$problems drift issue(s). see 'fix:' lines above."
 fi
 
 exit $problems
