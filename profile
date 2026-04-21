@@ -36,6 +36,7 @@ export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agen
 export AIDER_MODEL="gemini"
 export MCP_TOOL_TIMEOUT=10000
 export CLAUDE_CODE_NO_FLICKER=1
+export CLAUDE_CODE_DISABLE_1M_CONTEXT=1
 export ARGOCD_OPTS="--core"
 
 # =============================================================================
