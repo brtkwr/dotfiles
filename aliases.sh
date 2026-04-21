@@ -406,8 +406,20 @@ ccspeak() {
   fi
 }
 
-alias clist="cswap --list"
-alias cswitch="cswap --switch"
+cswap() {
+  if [[ $# -eq 0 ]]; then
+    command cswap --list
+    return
+  fi
+  local args=()
+  for a in "$@"; do
+    case "$a" in
+      -s) args+=(--switch) ;;
+      *)  args+=("$a") ;;
+    esac
+  done
+  command cswap "${args[@]}"
+}
 
 # 1Password secrets
 op-refresh() { op inject -i ~/.secrets.tpl >~/.secrets.cache && source ~/.secrets.cache && echo "secrets refreshed"; }
