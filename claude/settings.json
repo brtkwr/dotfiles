@@ -1,6 +1,7 @@
 {
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION": "fix"
   },
   "permissions": {
     "allow": [
@@ -172,10 +173,15 @@
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": true,
   "skipDangerousModePermissionPrompt": true,
+  "theme": "auto",
+  "verbose": true,
+  "preferredNotifChannel": "iterm2_with_bell",
+  "teammateMode": "tmux",
+  "remoteControlAtStartup": false,
+  "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ],
-  "teammateMode": "tmux"
+  ]
 }
