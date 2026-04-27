@@ -414,8 +414,9 @@ cswap() {
   local args=()
   for a in "$@"; do
     case "$a" in
-      -s) args+=(--switch) ;;
-      *)  args+=("$a") ;;
+      -s)   args+=(--switch) ;;
+      -s*)  args+=(--switch-to "${a#-s}") ;;
+      *)    args+=("$a") ;;
     esac
   done
   command cswap "${args[@]}"
