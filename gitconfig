@@ -2,13 +2,11 @@
 [user]
 	name = Bharat Kunwar
 	email = brtkwr@gmail.com
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKIvgIyJqPWv02USWMr7+pV0ZeK5szAfzhxqiEtgLx8O
+	signingkey = ~/.ssh/id_ed25519_github.pub
 [commit]
 	gpgsign = true
 [gpg]
 	format = ssh
-[gpg "ssh"]
-	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
 [pull]
 	rebase = true
 [push]
