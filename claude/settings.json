@@ -151,7 +151,9 @@
     "claude-code@agentic-utils": true,
     "disk-cleanup@agentic-utils": true,
     "svelte-lsp@agentic-utils": true,
-    "ty-lsp@agentic-utils": true
+    "ty-lsp@agentic-utils": true,
+    "cloudflare@claude-plugins-official": true,
+    "two-review@two-inc": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
@@ -173,6 +175,7 @@
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": true,
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "verbose": true,
   "preferredNotifChannel": "iterm2_with_bell",

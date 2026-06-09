@@ -94,3 +94,7 @@ fi
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/brtkwr/.lmstudio/bin"
 # End of LM Studio CLI section
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/brtkwr/.local/bin:$PATH"
