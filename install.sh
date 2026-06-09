@@ -32,9 +32,6 @@ link "$DOTFILES_DIR/zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/zprofile" "$HOME/.zprofile"
 link "$DOTFILES_DIR/profile" "$HOME/.profile"
 
-# Secrets template (1Password)
-link "$DOTFILES_DIR/secrets.tpl" "$HOME/.secrets.tpl"
-
 # Git
 link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 
@@ -50,12 +47,10 @@ link "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
 
 # Claude Code
 mkdir -p "$HOME/.claude"
+link "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link "$DOTFILES_DIR/claude/CLAUDE.public.md" "$HOME/.claude/CLAUDE.public.md"
-link "$DOTFILES_DIR/claude/build-claude-md.sh" "$HOME/.claude/build-claude-md.sh"
 link "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
-# Build CLAUDE.md from all CLAUDE.*.md files
-"$HOME/.claude/build-claude-md.sh"
 
 # ~/lib dyld fallback symlinks for weasyprint/pango on macOS
 # macOS SIP strips DYLD_LIBRARY_PATH at exec boundaries (e.g. /usr/bin/env),
