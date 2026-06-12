@@ -174,6 +174,7 @@
   "effortLevel": "medium",
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": true,
+  "cleanupPeriodDays": 60,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
