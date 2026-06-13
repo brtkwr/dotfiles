@@ -153,7 +153,9 @@
     "svelte-lsp@agentic-utils": true,
     "ty-lsp@agentic-utils": true,
     "cloudflare@claude-plugins-official": true,
-    "two-review@two-inc": true
+    "two-review@two-inc": true,
+    "notion@claude-plugins-official": true,
+    "posthog@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
@@ -187,5 +189,6 @@
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ]
+  ],
+  "model": "claude-opus-4-8"
 }
