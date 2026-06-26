@@ -3,8 +3,6 @@
 Edit the appropriate source file when updating instructions:
 - `~/.claude/CLAUDE.public.md` (synced via dotfiles) / `~/.claude/CLAUDE.private.md` (not synced) / `~/.claude/CLAUDE.work.md` (Two Inc)
 
-Most behavioural rules (communication style, code comments, faithful reporting, git workflow, blog posts, etc.) live as individual feedback memories under `~/.claude/memory/` — see `MEMORY.md` for the index.
-
 ## General Rules
 
 - Always use British english unless asked otherwise
