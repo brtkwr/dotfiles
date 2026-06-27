@@ -1,4 +1,5 @@
 {
+  "cleanupPeriodDays": 90,
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION": "fix"
@@ -114,18 +115,6 @@
     "ask": [],
     "defaultMode": "auto"
   },
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/speak-response.sh"
-          }
-        ]
-      }
-    ]
-  },
   "statusLine": {
     "type": "command",
     "command": "/Users/brtkwr/.claude/statusline-command.sh"
@@ -133,7 +122,6 @@
   "enabledPlugins": {
     "plugin-dev@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
-    "claude-mem@thedotmack": false,
     "skill-creator@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
@@ -155,7 +143,8 @@
     "cloudflare@claude-plugins-official": true,
     "two-review@two-inc": true,
     "notion@claude-plugins-official": true,
-    "posthog@claude-plugins-official": true
+    "two-security@two-inc": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
@@ -171,24 +160,28 @@
         "url": "https://github.com/agentic-utils/skills.git"
       },
       "autoUpdate": true
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
-  "effortLevel": "medium",
+  "effortLevel": "high",
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": true,
-  "cleanupPeriodDays": 90,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "verbose": true,
   "preferredNotifChannel": "iterm2_with_bell",
-  "teammateMode": "tmux",
-  "remoteControlAtStartup": false,
+  "teammateMode": "iterm2",
+  "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ],
-  "model": "claude-opus-4-8"
+  ]
 }

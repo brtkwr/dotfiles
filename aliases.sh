@@ -233,7 +233,7 @@ gsecret() {
     fi
   fi
 
-  gcloud secrets versions access latest --secret="$secret_name" --project="$project"
+  gcloud secrets versions access latest --secret="$secret_name" --project="$project" | tr -d '\n' | pbcopy && echo "copied $secret_name to clipboard" >&2
 }
 
 # GCP: Login helper
