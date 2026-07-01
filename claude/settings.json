@@ -126,6 +126,16 @@
             "statusMessage": "Checking review-channel routing"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/brtkwr/.claude/hooks/nudge-worktree-for-feature-branch.sh",
+            "statusMessage": "Checking for feature-branch git op outside worktree"
+          }
+        ]
       }
     ],
     "PostToolUse": [
