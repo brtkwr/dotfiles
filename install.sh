@@ -48,7 +48,6 @@ link "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
 # Claude Code
 mkdir -p "$HOME/.claude"
 link "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-link "$DOTFILES_DIR/claude/CLAUDE.public.md" "$HOME/.claude/CLAUDE.public.md"
 link "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
 

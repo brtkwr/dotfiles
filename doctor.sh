@@ -33,7 +33,7 @@ check_link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 check_link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 check_link "$DOTFILES_DIR/starship.toml" "$HOME/.config/starship.toml"
 check_link "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
-check_link "$DOTFILES_DIR/claude/CLAUDE.public.md" "$HOME/.claude/CLAUDE.public.md"
+check_link "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 check_link "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 check_link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
 
