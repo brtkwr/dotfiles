@@ -115,6 +115,7 @@
     "ask": [],
     "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -122,7 +123,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -c \"if (.tool_input.skill // \\\"\\\") == \\\"two-slack:two-slack-operations\\\" then {hookSpecificOutput:{hookEventName:\\\"PreToolUse\\\",additionalContext:\\\"Review requests route by Linear ticket prefix \\\\u2014 PLAT-* \\\\u2192 #control-plane (C09J5J4NFR6), PERF-* \\\\u2192 C0B9ZAL1USF, ISEC-* \\\\u2192 #control-plane. NEVER #tech-platform for reviews. Source of truth: ~/.claude/memory/reference_two_review_channel.md. Pass the exact channel ID; do not let the skill guess.\\\"}} else empty end\"",
+            "command": "jq -c \"if (.tool_input.skill // \\\"\\\") == \\\"two-slack:two-slack-operations\\\" then {hookSpecificOutput:{hookEventName:\\\"PreToolUse\\\",additionalContext:\\\"Review requests route by Linear ticket prefix \\\\u2014 PLAT-* \\\\u2192 #control-plane (C09J5J4NFR6), PERF-* \\\\u2192 C0B9ZAL1USF, ISEC-* \\\\u2192 #control-plane. NEVER #tech-platform for reviews. Source of truth: ~/.claude/projects/-Users-brtkwr-Code-two-inc/memory/reference_two_review_channel.md. Pass the exact channel ID; do not let the skill guess.\\\"}} else empty end\"",
             "statusMessage": "Checking review-channel routing"
           }
         ]
@@ -205,7 +206,7 @@
     }
   },
   "effortLevel": "medium",
-  "advisorModel": "opus",
+  "advisorModel": "fable",
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": true,
   "skipDangerousModePermissionPrompt": true,

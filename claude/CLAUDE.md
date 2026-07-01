@@ -16,6 +16,8 @@ Choose scope before saving an auto-memory, then write to the matching dir and up
 
 The harness defaults to the *current* project's dir. Override to the home dir above when the fact is genuinely global — don't let a cross-project rule get trapped in one repo's memory.
 
+Each `MEMORY.md` line is the actionable rule itself — trigger + directive, self-sufficient — because only the index is loaded every session; individual files surface only via recall, too unreliable for an always-apply rule. Keep a separate `<name>.md` file only when there's real detail worth pulling up on demand (why, examples, edge cases). A one-line rule needs no file.
+
 ## Dotfiles
 
 Config files are managed in `~/Code/brtkwr/dotfiles/`. When modifying any of these, update the source and push:
