@@ -12,10 +12,13 @@ set -euo pipefail
 INPUT=$(cat)
 CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
-# Only match feature-branch operations. Note: `git checkout main` /
-# `git checkout master` / `git checkout <sha>` are deliberately NOT
-# matched — the pattern needs a `bharat/*` / `feat/*` / etc. prefix.
-if ! echo "$CMD" | grep -qE '(^|[^A-Za-z0-9])(git checkout -b (bharat/|feat/|fix/|chore/|docs/|refactor/|test/|perf/)|git checkout (bharat/|feat/|fix/|chore/|docs/|refactor/|test/|perf/)|git rebase (origin/main|origin/master|main|master))'; then
+# Only match feature-branch operations. Match must be anchored at the START
+# of the command (optionally after `cd <path> && `) so we don't
+# false-positive on strings inside quoted commit messages, echo args, or
+# heredocs that describe the pattern rather than execute it.
+# `git checkout main` / `git checkout <sha>` are deliberately NOT matched -
+# the pattern needs a `bharat/*` / `feat/*` / etc. prefix.
+if ! echo "$CMD" | grep -qE '^(cd [^&;|]+ *&& *)?git (checkout -b (bharat|feat|fix|chore|docs|refactor|test|perf)/|checkout (bharat|feat|fix|chore|docs|refactor|test|perf)/|rebase (origin/main|origin/master|main|master)( |$))'; then
   exit 0
 fi
 
