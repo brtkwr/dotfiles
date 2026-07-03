@@ -6,6 +6,7 @@ This file (`~/.claude/CLAUDE.md`) is synced via dotfiles and loads globally. Pro
 
 - Always use British english unless asked otherwise
 - When using secrets from env vars in curl headers, use backticks `` `printenv VAR` `` not `$(printenv VAR)` or `$VAR` (zsh expansion issues)
+- When referencing a PR or issue, always give the full clickable `https://` URL — never just a bare `#123`, `repo#123`, or passing mention I can't click open. Applies to every PR/issue I might want to open (chat replies, summaries, status updates).
 
 ## Saving memories
 
