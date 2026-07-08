@@ -31,16 +31,16 @@ independent tasks as parallel background agents rather than doing them serially 
 main session. Don't spawn persistent teammates; one-shot background subagents (or
 Workflow for fan-outs) cover it.
 
-Pick the subagent model by task, not by habit:
+Match the subagent's model tier to the task:
 
 - **haiku**: trivial classification or extraction only. Nothing that requires judgement.
 - **sonnet**: mechanical work with a clear spec — searches, summarisation, boilerplate,
   simple designs, first-pass reviews.
 - **opus**: design docs, architectural review, adversarial review of complex changes.
-- **fable**: complex implementation and anything
-  where a wrong answer costs a re-run. If the session already runs on the top tier,
-  omit the model and let the subagent inherit it — that keeps this rule from going
-  stale when model names change.
+- **top tier** (fable today): complex implementation and anything where a wrong answer
+  costs a re-run. When the session itself runs on the top tier, select it by omitting
+  the model so the subagent inherits it — that keeps this rule from going stale when
+  model names change.
 
 Always prefix the subagent's name with its model class (e.g. `sonnet-log-trawl`,
 `opus-design-review`) so it's obvious at a glance which tier is doing what.
