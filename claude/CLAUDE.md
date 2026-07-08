@@ -31,8 +31,10 @@ Pick the subagent model by task, not by habit:
 - **sonnet**: mechanical work with a clear spec — searches, summarisation, boilerplate,
   simple designs, first-pass reviews.
 - **opus**: design docs, architectural review, adversarial review of complex changes.
-- **omit the model** (inherit the session model): complex implementation and anything
-  where a wrong answer costs a re-run.
+- **fable**: complex implementation and anything
+  where a wrong answer costs a re-run. If the session already runs on the top tier,
+  omit the model and let the subagent inherit it — that keeps this rule from going
+  stale when model names change.
 
 Briefings: terse but self-contained. The subagent has no conversation context — include
 file paths, constraints, and the expected output shape. An ambiguous brief that forces a
