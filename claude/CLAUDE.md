@@ -36,9 +36,19 @@ Pick the subagent model by task, not by habit:
   omit the model and let the subagent inherit it — that keeps this rule from going
   stale when model names change.
 
-Briefings: terse but self-contained. The subagent has no conversation context — include
-file paths, constraints, and the expected output shape. An ambiguous brief that forces a
-re-run costs more than a verbose one.
+Before spawning a fresh subagent, consider a **fork** of the current session
+(`subagent_type: "fork"`) instead. A fork reads the existing conversation from the
+prompt cache (~10% of input price while the cache is warm) and needs only a short
+instruction, no briefing. A fresh subagent pays full cache-write rates on its own fresh
+system context (tools, skills, CLAUDE.md — easily 30-50k tokens) plus the full briefing
+before it does any work. So fork when the task genuinely needs the conversation context
+and the current model suits it (forks always inherit the parent model). Spawn fresh when
+it needs a different model or the context is irrelevant — a fork drags the whole
+conversation along, making every one of its turns pricier.
+
+Briefings (for fresh subagents): terse but self-contained. The subagent has no
+conversation context — include file paths, constraints, and the expected output shape.
+An ambiguous brief that forces a re-run costs more than a verbose one.
 
 For large fan-outs (many independent subagents over a list), use Workflow rather than
 hand-spawning Agents.
