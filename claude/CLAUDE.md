@@ -19,6 +19,28 @@ The harness defaults to the *current* project's dir. Override to the home dir ab
 
 Each `MEMORY.md` line is the actionable rule itself — trigger + directive, self-sufficient — because only the index is loaded every session; individual files surface only via recall, too unreliable for an always-apply rule. Keep a separate `<name>.md` file only when there's real detail worth pulling up on demand (why, examples, edge cases). A one-line rule needs no file.
 
+## Subagent delegation
+
+Delegate token-heavy work where only a summary needs to come back: codebase/file/PDF
+searches, log or dataset trawls, browser use, large-diff reviews. The goal is keeping
+the main session's context small, not just cheaper tokens.
+
+Pick the subagent model by task, not by habit:
+
+- **haiku**: trivial classification or extraction only. Nothing that requires judgement.
+- **sonnet**: mechanical work with a clear spec — searches, summarisation, boilerplate,
+  simple designs, first-pass reviews.
+- **opus**: design docs, architectural review, adversarial review of complex changes.
+- **omit the model** (inherit the session model): complex implementation and anything
+  where a wrong answer costs a re-run.
+
+Briefings: terse but self-contained. The subagent has no conversation context — include
+file paths, constraints, and the expected output shape. An ambiguous brief that forces a
+re-run costs more than a verbose one.
+
+For large fan-outs (many independent subagents over a list), use Workflow rather than
+hand-spawning Agents.
+
 ## Dotfiles
 
 Config files are managed in `~/Code/brtkwr/dotfiles/`. When modifying any of these, update the source and push:
