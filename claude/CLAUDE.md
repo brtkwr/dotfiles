@@ -36,6 +36,9 @@ Pick the subagent model by task, not by habit:
   omit the model and let the subagent inherit it — that keeps this rule from going
   stale when model names change.
 
+Always prefix the subagent's name with its model class (e.g. `sonnet-log-trawl`,
+`opus-design-review`) so it's obvious at a glance which tier is doing what.
+
 Before spawning a fresh subagent, consider a **fork** of the current session
 (`subagent_type: "fork"`) instead. A fork reads the existing conversation from the
 prompt cache (~10% of input price while the cache is warm) and needs only a short
