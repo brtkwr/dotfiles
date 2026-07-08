@@ -21,9 +21,15 @@ Each `MEMORY.md` line is the actionable rule itself — trigger + directive, sel
 
 ## Subagent delegation
 
-Delegate token-heavy work where only a summary needs to come back: codebase/file/PDF
-searches, log or dataset trawls, browser use, large-diff reviews. The goal is keeping
-the main session's context small, not just cheaper tokens.
+Delegate aggressively — subagents are the default for any self-contained piece of work,
+not a last resort. Anything token-heavy where only a summary needs to come back goes to
+a subagent: codebase/file/PDF searches, log or dataset trawls, browser use, large-diff
+reviews. The goal is keeping the main session's context small, not just cheaper tokens.
+
+Run subagents in the background (the default) and carry on with other work — fan out
+independent tasks as parallel background agents rather than doing them serially in the
+main session. Don't spawn persistent teammates; one-shot background subagents (or
+Workflow for fan-outs) cover it.
 
 Pick the subagent model by task, not by habit:
 
