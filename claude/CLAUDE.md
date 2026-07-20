@@ -31,6 +31,19 @@ independent tasks as parallel background agents rather than doing them serially 
 main session. Don't spawn persistent teammates; one-shot background subagents (or
 Workflow for fan-outs) cover it.
 
+External CLI subagents — invocation recipes in the `reference_codex_delegation` and
+`reference_cswap_delegation` memories. Priority order for a dedicated delegated task:
+
+1. **`codex exec` (default)** — GPT via Codex CLI, model `gpt-5.6-sol`. First choice for
+   any self-contained delegated task: a second model's take, spreading token cost off my
+   own quota, non-interactive research/edits.
+2. **`cswap run`** — Claude Code under a different claude.ai account. Use when the work
+   genuinely needs Claude (a Claude-only skill/MCP, matching this session's behaviour) or
+   a different account's quota.
+3. **Agent tool / Workflow** — in-session Claude subagents and fan-outs, per the tiers below.
+
+Always report the delegated run's token usage (and cost, for cswap) back in the summary.
+
 Match the subagent's model tier to the task:
 
 - **haiku**: trivial classification or extraction only. Nothing that requires judgement.
