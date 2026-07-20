@@ -39,10 +39,13 @@ External CLI subagents — invocation recipes in the `reference_codex_delegation
    own quota, non-interactive research/edits.
 2. **`cswap run`** — Claude Code under a different claude.ai account. Use when the work
    genuinely needs Claude (a Claude-only skill/MCP, matching this session's behaviour) or
-   a different account's quota.
+   a different account's quota. That account is **Opus-only** — never route Fable-tier
+   work to it.
 3. **Agent tool / Workflow** — in-session Claude subagents and fan-outs, per the tiers below.
 
-Always report the delegated run's token usage (and cost, for cswap) back in the summary.
+Fable-tier work always stays in the current session (fork or in-session subagent) — cswap
+can't serve it and Codex is a different model. Always report the delegated run's token
+usage (and cost, for cswap) back in the summary.
 
 Match the subagent's model tier to the task:
 
