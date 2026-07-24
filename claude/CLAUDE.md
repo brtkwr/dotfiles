@@ -71,11 +71,14 @@ jq parsing, session-profile paths, and edge cases stay in `reference_codex_deleg
   and report `resetsAt` instead of retrying. Neither CLI exposes a usage percentage, so a
   "exit above 90%" preflight is impossible; gate on these status/error signals instead.
 
-Double-failure fallback: if codex fails/rate-limits AND cswap fails/rate-limits, the haiku
-runner does NOT attempt the task itself (relay-only, wrong tier) — it reports "both
-delegations failed" up to the parent. The **parent** then does the work in-session (inline,
-or a fork/subagent of the right tier), rather than retrying delegation. This is exactly the
-hook's exception (e), so the parent using its own capability at that point is expected.
+Failure always falls back to the parent, never sideways. Each haiku runner wraps exactly
+ONE CLI (codex OR cswap) and is a single-shot relay — a codex runner must never fall back
+to cswap, nor cswap to codex. On any failure/rate-limit it reports the failure up and
+stops; it does not attempt the task itself (relay-only, wrong tier). The **parent** — the
+only orchestrating, capable tier — then does the work in-session (inline, or a fork/subagent
+of the right tier). This is the hook's exception (e). The parent may of course choose to
+try the other tool as a fresh, explicit dispatch, but that is the parent's decision, not an
+automatic runner-to-runner chain.
 
 Match the subagent's model tier to the task:
 
