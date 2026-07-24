@@ -16,21 +16,24 @@ if git -C "$cwd" rev-parse --git-dir >/dev/null 2>&1; then
     fi
 fi
 
-# model + context% + cost in one jq pass; context% falls back to manual calc
-read -r model ctx cost < <(echo "$input" | jq -r '
-    (.model.display_name // "?") as $m
+# model + context% + context tokens in one jq pass; % falls back to manual calc
+# tok = raw tokens in context (same numerator as %), formatted 137k / 1.2M
+read -r model ctx tok < <(echo "$input" | jq -r '
+    ((.context_window.current_usage.input_tokens // .context_window.total_input_tokens // 0)
+     + (.context_window.current_usage.cache_creation_input_tokens // 0)
+     + (.context_window.current_usage.cache_read_input_tokens // 0)) as $t
+    | (.model.display_name // "?") as $m
     | (.context_window.used_percentage
        // (if (.context_window.context_window_size // 0) > 0
-           then ((.context_window.current_usage.input_tokens // 0)
-               + (.context_window.current_usage.cache_creation_input_tokens // 0)
-               + (.context_window.current_usage.cache_read_input_tokens // 0))
-               / .context_window.context_window_size * 100
+           then $t / .context_window.context_window_size * 100
            else null end)) as $c
-    | (.cost.total_cost_usd // 0) as $u
-    | "\($m) \(if $c == null then "-" else (($c | floor | tostring) + "%") end) \($u | . * 100 | round / 100)"')
+    | ($t | if . >= 1000000 then (. / 100000 | round / 10 | tostring) + "M"
+            elif . >= 1000 then (. / 1000 | floor | tostring) + "k"
+            else tostring end) as $tf
+    | "\($m) \(if $c == null then "-" else (($c | floor | tostring) + "%") end) \($tf)"')
 
 # yellow context% once past 80, else dim
 ctx_col="\033[2m"
 [ "${ctx%\%}" != "-" ] && [ "${ctx%\%}" -ge 80 ] 2>/dev/null && ctx_col="\033[1;33m"
 
-printf "${git_seg}  \033[2m%s\033[0m ${ctx_col}%s\033[0m \033[2m\$%s\033[0m " "$model" "$ctx" "$cost"
+printf "${git_seg}  \033[2m%s\033[0m ${ctx_col}%s\033[0m \033[2m%s\033[0m " "$model" "$ctx" "$tok"
