@@ -28,8 +28,12 @@
       "Bash(for:*)",
       "Bash(gh issue create:*)",
       "Bash(gh issue list:*)",
+      "Bash(gh api -X DELETE:*)",
+      "Bash(gh pr comment:*)",
       "Bash(gh pr create:*)",
       "Bash(gh pr list:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh pr review:*)",
       "Bash(gh pr view:*)",
       "Bash(gh repo view:*)",
       "Bash(gh run list:*)",
@@ -166,9 +170,9 @@
     "command": "/Users/brtkwr/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "plugin-dev@claude-plugins-official": true,
-    "pr-review-toolkit@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": false,
+    "pr-review-toolkit@claude-plugins-official": false,
+    "skill-creator@claude-plugins-official": false,
     "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "two-bigquery@two-inc": true,
@@ -180,11 +184,11 @@
     "two-observability@two-inc": true,
     "two-platform@two-inc": true,
     "two-slack@two-inc": true,
-    "swift-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": false,
     "frontend-design@claude-plugins-official": true,
     "claude-code@agentic-utils": true,
     "disk-cleanup@agentic-utils": true,
-    "svelte-lsp@agentic-utils": true,
+    "svelte-lsp@agentic-utils": false,
     "ty-lsp@agentic-utils": true,
     "cloudflare@claude-plugins-official": true,
     "two-review@two-inc": true,
@@ -229,5 +233,6 @@
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ]
+  ],
+  "model": "claude-fable-5[1m]"
 }
