@@ -16,24 +16,36 @@ if git -C "$cwd" rev-parse --git-dir >/dev/null 2>&1; then
     fi
 fi
 
-# model + context% + context tokens in one jq pass; % falls back to manual calc
-# tok = raw tokens in context (same numerator as %), formatted 137k / 1.2M
-read -r model ctx tok < <(echo "$input" | jq -r '
+# magenta ‹worktree› when in one
+wt=$(echo "$input" | jq -r '.worktree.name // empty')
+[ -n "$wt" ] && git_seg="${git_seg} \033[35m‹${wt}›\033[0m"
+
+# one jq pass, tab-separated: model, fast(⚡|-), effort(|-), ctx%, quota%(|-)
+# ctx% falls back to a manual token calc when used_percentage is null
+IFS=$'\t' read -r model fast effort ctx quota < <(echo "$input" | jq -r '
     ((.context_window.current_usage.input_tokens // .context_window.total_input_tokens // 0)
      + (.context_window.current_usage.cache_creation_input_tokens // 0)
      + (.context_window.current_usage.cache_read_input_tokens // 0)) as $t
-    | (.model.display_name // "?") as $m
     | (.context_window.used_percentage
        // (if (.context_window.context_window_size // 0) > 0
            then $t / .context_window.context_window_size * 100
            else null end)) as $c
-    | ($t | if . >= 1000000 then (. / 100000 | round / 10 | tostring) + "M"
-            elif . >= 1000 then (. / 1000 | floor | tostring) + "k"
-            else tostring end) as $tf
-    | "\($m) \(if $c == null then "-" else (($c | floor | tostring) + "%") end) \($tf)"')
+    | [ (.model.display_name // "?"),
+        (if .fast_mode then "⚡" else "-" end),
+        (.effort.level // "-"),
+        (if $c == null then "-" else (($c | floor | tostring) + "%") end),
+        (if .rate_limits.five_hour.used_percentage
+            then (.rate_limits.five_hour.used_percentage | floor | tostring) + "%"
+            else "-" end)
+      ] | @tsv')
 
-# yellow context% once past 80, else dim
-ctx_col="\033[2m"
-[ "${ctx%\%}" != "-" ] && [ "${ctx%\%}" -ge 80 ] 2>/dev/null && ctx_col="\033[1;33m"
+# yellow past 80%, else dim (shared helper)
+col() { if [ "${1%\%}" != "-" ] && [ "${1%\%}" -ge 80 ] 2>/dev/null; then printf '\033[1;33m'; else printf '\033[2m'; fi; }
 
-printf "${git_seg}  \033[2m%s\033[0m ${ctx_col}%s\033[0m \033[2m%s\033[0m " "$model" "$ctx" "$tok"
+out="${git_seg}  \033[2m${model}\033[0m"
+[ "$fast" != "-" ] && out="${out}${fast}"
+[ "$effort" != "-" ] && out="${out} \033[2m${effort}\033[0m"
+out="${out}  $(col "$ctx")${ctx}\033[0m"
+[ "$quota" != "-" ] && out="${out}  $(col "$quota")5h:${quota}\033[0m"
+
+printf '%b ' "$out"
