@@ -126,7 +126,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -c '{hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:\"STOP before spawning. Default delegation is codex exec (gpt-5.6-sol) per ~/.claude/CLAUDE.md. Before using the in-session Agent tool you MUST be able to name which exception applies: (a) a fork of THIS session context, (b) a Claude-only skill/MCP codex lacks, (c) a Workflow fan-out, (d) codex AND cswap both already failed this session. If you cannot name one, cancel this Agent call and run codex exec instead (recipe: reference_codex_delegation memory). State the exception in your reply so it is auditable.\"}}'",
+            "command": "jq -c '{hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:\"STOP before spawning. Delegated *thinking* defaults to codex exec (gpt-5.6-sol) per ~/.claude/CLAUDE.md — do NOT use a mid/high-tier Claude Agent to do reasoning that codex should do. The Agent tool is correct when: (a) a haiku runner that only invokes codex/cswap and relays the summary (the standard delegation wrapper — name it haiku-codex-<task> / haiku-cswap-<task>), (b) a fork of THIS session context, (c) a Claude-only skill/MCP codex lacks, (d) a Workflow fan-out, (e) codex AND cswap both already failed this session. Name which applies in your reply so it is auditable. If none and a Claude agent is about to do the reasoning, cancel and run codex instead (recipe: reference_codex_delegation memory).\"}}'",
             "statusMessage": "Delegation-priority reminder"
           }
         ]

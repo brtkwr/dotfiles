@@ -46,6 +46,16 @@ The cswap account (`cswap run 1`) only supports Opus-tier and below — fable-ti
 stays in the current session (fork / in-session subagent). Always report the delegated
 run's token usage (and cost, for cswap) back in the summary.
 
+Run the external CLIs *through* a `haiku` runner subagent, not as a bare Bash call: the
+haiku agent's only job is to invoke `codex exec` / `cswap run`, read the output file, and
+return the summary plus the token/cost line. This keeps the token-heavy output out of the
+main session and makes the delegation show up as a named background agent
+(`haiku-codex-<task>`, `haiku-cswap-<task>`) instead of an opaque shell command — so the
+orchestration layer stays Claude-native regardless of which model does the muscle. The
+haiku runner *relays only*; it must not re-analyse (tier limit) — codex/cswap already did
+the thinking. Skip the wrapper only when the CLI was asked for a tight answer already
+small enough to read directly.
+
 Match the subagent's model tier to the task:
 
 - **haiku**: trivial classification or extraction only. Nothing that requires judgement.
@@ -58,7 +68,9 @@ Match the subagent's model tier to the task:
   model names change.
 
 Always prefix the subagent's name with its model class (e.g. `sonnet-log-trawl`,
-`opus-design-review`) so it's obvious at a glance which tier is doing what.
+`opus-design-review`) so it's obvious at a glance which tier is doing what. For the
+external-CLI runners the muscle-model goes in the task half: `haiku-codex-<task>`,
+`haiku-cswap-<task>`.
 
 Before spawning a fresh subagent, consider a **fork** of the current session
 (`subagent_type: "fork"`) instead. A fork reads the existing conversation from the
