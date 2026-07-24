@@ -115,7 +115,6 @@
     "ask": [],
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -125,6 +124,16 @@
             "type": "command",
             "command": "jq -c \"if (.tool_input.skill // \\\"\\\") == \\\"two-slack:two-slack-operations\\\" then {hookSpecificOutput:{hookEventName:\\\"PreToolUse\\\",additionalContext:\\\"Review requests route by Linear ticket prefix \\\\u2014 PLAT-* \\\\u2192 #control-plane (C09J5J4NFR6), PERF-* \\\\u2192 C0B9ZAL1USF, ISEC-* \\\\u2192 #control-plane. NEVER #tech-platform for reviews. Source of truth: ~/.claude/projects/-Users-brtkwr-Code-two-inc/memory/reference_two_review_channel.md. Pass the exact channel ID; do not let the skill guess.\\\"}} else empty end\"",
             "statusMessage": "Checking review-channel routing"
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -c '{hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:\"Delegation priority (from ~/.claude/CLAUDE.md): 1) codex exec (gpt-5.6-sol) 2) cswap run 3) in-session Agent. Use the Agent tool only for forks of this session, Claude-only skills/MCP, Workflow fan-outs, or when codex/cswap runs are failing. Recipes: reference_codex_delegation / reference_cswap_delegation memories. If proceeding with Agent, that is fine when justified - this is a reminder, not a block.\"}}'",
+            "statusMessage": "Delegation-priority reminder"
           }
         ]
       },
@@ -206,7 +215,6 @@
     }
   },
   "effortLevel": "medium",
-  "advisorModel": "fable",
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": true,
   "skipDangerousModePermissionPrompt": true,
@@ -214,7 +222,7 @@
   "theme": "auto",
   "verbose": true,
   "preferredNotifChannel": "iterm2_with_bell",
-  "teammateMode": "iterm2",
+  "teammateMode": "in-process",
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,

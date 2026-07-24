@@ -42,10 +42,9 @@ External CLI subagents — invocation recipes in the `reference_codex_delegation
    a different account's quota.
 3. **Agent tool / Workflow** — in-session Claude subagents and fan-outs, per the tiers below.
 
-Fable-tier work can also be delegated to the other account via `cswap run ... --model
-claude-fable-5`; fall back to the current session (fork / in-session subagent) if those
-delegated runs start failing repeatedly. Always report the delegated run's token usage
-(and cost, for cswap) back in the summary.
+The cswap account (`cswap run 1`) only supports Opus-tier and below — fable-tier work
+stays in the current session (fork / in-session subagent). Always report the delegated
+run's token usage (and cost, for cswap) back in the summary.
 
 Match the subagent's model tier to the task:
 
