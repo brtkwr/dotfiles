@@ -126,7 +126,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -c '{hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:\"Delegation priority (from ~/.claude/CLAUDE.md): 1) codex exec (gpt-5.6-sol) 2) cswap run 3) in-session Agent. Use the Agent tool only for forks of this session, Claude-only skills/MCP, Workflow fan-outs, or when codex/cswap runs are failing. Recipes: reference_codex_delegation / reference_cswap_delegation memories. If proceeding with Agent, that is fine when justified - this is a reminder, not a block.\"}}'",
+            "command": "jq -c '{hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:\"STOP before spawning. Default delegation is codex exec (gpt-5.6-sol) per ~/.claude/CLAUDE.md. Before using the in-session Agent tool you MUST be able to name which exception applies: (a) a fork of THIS session context, (b) a Claude-only skill/MCP codex lacks, (c) a Workflow fan-out, (d) codex AND cswap both already failed this session. If you cannot name one, cancel this Agent call and run codex exec instead (recipe: reference_codex_delegation memory). State the exception in your reply so it is auditable.\"}}'",
             "statusMessage": "Delegation-priority reminder"
           }
         ]
