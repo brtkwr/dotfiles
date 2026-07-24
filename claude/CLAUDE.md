@@ -56,6 +56,21 @@ haiku runner *relays only*; it must not re-analyse (tier limit) — codex/cswap 
 the thinking. Skip the wrapper only when the CLI was asked for a tight answer already
 small enough to read directly.
 
+Invocation one-liners, inline so a delegation never waits on memory recall (the verbose
+jq parsing, session-profile paths, and edge cases stay in `reference_codex_delegation` /
+`reference_cswap_delegation`):
+
+- **codex:** `codex exec --skip-git-repo-check -s read-only --json -o ans.txt "PROMPT" 2>/dev/null`
+  — answer lands in `ans.txt`; tokens from the final `turn.completed` event. No usage/quota
+  readout exists at all (ChatGPT-subscription auth surfaces nothing), so gate only on a
+  rate-limit *error*, never a preflight %.
+- **cswap:** `cswap run 1 -- -p 'PROMPT' --model claude-sonnet-5 --output-format json 2>/dev/null > out.json`
+  — MUST pass `--model <opus-or-below>`; a bare run inherits account 1's uncredited
+  `claude-fable-5` default and fails with "Fable 5 requires usage credits". Answer/cost/tokens
+  from `.[-1]`. Guard: check the stream's `rate_limit_event.status` — if not `allowed`, stop
+  and report `resetsAt` instead of retrying. Neither CLI exposes a usage percentage, so a
+  "exit above 90%" preflight is impossible; gate on these status/error signals instead.
+
 Match the subagent's model tier to the task:
 
 - **haiku**: trivial classification or extraction only. Nothing that requires judgement.
