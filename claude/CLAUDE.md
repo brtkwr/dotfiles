@@ -21,97 +21,24 @@ Each `MEMORY.md` line is the actionable rule itself — trigger + directive, sel
 
 ## Subagent delegation
 
-Delegate aggressively — subagents are the default for any self-contained piece of work,
-not a last resort. Anything token-heavy where only a summary needs to come back goes to
-a subagent: codebase/file/PDF searches, log or dataset trawls, browser use, large-diff
-reviews. The goal is keeping the main session's context small, not just cheaper tokens.
+Delegate aggressively — self-contained, token-heavy work (searches, log or dataset trawls,
+browser use, large-diff reviews) goes to a background subagent, so the main session's
+context stays small. Fan out independent tracks in parallel; use Workflow for large
+fan-outs. One-shot background subagents, never persistent teammates.
 
-Run subagents in the background (the default) and carry on with other work — fan out
-independent tasks as parallel background agents rather than doing them serially in the
-main session. Don't spawn persistent teammates; one-shot background subagents (or
-Workflow for fan-outs) cover it.
+Prefer a **fork** (`subagent_type: "fork"`) when the task needs this conversation's
+context — it reads the warm prompt cache and needs no briefing. Spawn fresh when it needs
+a different model or the context is irrelevant; brief it terse but self-contained (file
+paths, constraints, expected output shape).
 
-External CLI subagents — invocation recipes in the `reference_codex_delegation` and
-`reference_cswap_delegation` memories. Priority order for a dedicated delegated task:
+Model tier: **haiku** extraction only, no judgement; **sonnet** mechanical work with a
+clear spec; **opus** design docs and architectural/adversarial review; **top tier** for
+complex implementation — select it by *omitting* the model so it inherits the session's.
+Prefix the agent name with its tier (`sonnet-log-trawl`, `opus-design-review`).
 
-1. **`codex exec` (default)** — GPT via Codex CLI, model `gpt-5.6-sol`. First choice for
-   any self-contained delegated task: a second model's take, spreading token cost off my
-   own quota, non-interactive research/edits.
-2. **`cswap run`** — Claude Code under a different claude.ai account. Use when the work
-   genuinely needs Claude (a Claude-only skill/MCP, matching this session's behaviour) or
-   a different account's quota.
-3. **Agent tool / Workflow** — in-session Claude subagents and fan-outs, per the tiers below.
-
-The cswap account (`cswap run 1`) only supports Opus-tier and below — fable-tier work
-stays in the current session (fork / in-session subagent). Always report the delegated
-run's token usage (and cost, for cswap) back in the summary.
-
-Run the external CLIs *through* a `haiku` runner subagent, not as a bare Bash call: the
-haiku agent's only job is to invoke `codex exec` / `cswap run`, read the output file, and
-return the summary plus the token/cost line. This keeps the token-heavy output out of the
-main session and makes the delegation show up as a named background agent
-(`haiku-codex-<task>`, `haiku-cswap-<task>`) instead of an opaque shell command — so the
-orchestration layer stays Claude-native regardless of which model does the muscle. The
-haiku runner *relays only*; it must not re-analyse (tier limit) — codex/cswap already did
-the thinking. Skip the wrapper only when the CLI was asked for a tight answer already
-small enough to read directly.
-
-Invocation one-liners, inline so a delegation never waits on memory recall (the verbose
-jq parsing, session-profile paths, and edge cases stay in `reference_codex_delegation` /
-`reference_cswap_delegation`):
-
-- **codex:** `codex exec --skip-git-repo-check -s read-only --json -o ans.txt "PROMPT" 2>/dev/null`
-  — answer lands in `ans.txt`; tokens from the final `turn.completed` event. No usage/quota
-  readout exists at all (ChatGPT-subscription auth surfaces nothing), so gate only on a
-  rate-limit *error*, never a preflight %.
-- **cswap:** `cswap run 1 -- -p 'PROMPT' --model claude-sonnet-5 --output-format json 2>/dev/null > out.json`
-  — MUST pass `--model <opus-or-below>`; a bare run inherits account 1's uncredited
-  `claude-fable-5` default and fails with "Fable 5 requires usage credits". Answer/cost/tokens
-  from `.[-1]`. Guard: check the stream's `rate_limit_event.status` — if not `allowed`, stop
-  and report `resetsAt` instead of retrying. Neither CLI exposes a usage percentage, so a
-  "exit above 90%" preflight is impossible; gate on these status/error signals instead.
-
-Failure always falls back to the parent, never sideways. Each haiku runner wraps exactly
-ONE CLI (codex OR cswap) and is a single-shot relay — a codex runner must never fall back
-to cswap, nor cswap to codex. On any failure/rate-limit it reports the failure up and
-stops; it does not attempt the task itself (relay-only, wrong tier). The **parent** — the
-only orchestrating, capable tier — then does the work in-session (inline, or a fork/subagent
-of the right tier). This is the hook's exception (e). The parent may of course choose to
-try the other tool as a fresh, explicit dispatch, but that is the parent's decision, not an
-automatic runner-to-runner chain.
-
-Match the subagent's model tier to the task:
-
-- **haiku**: trivial classification or extraction only. Nothing that requires judgement.
-- **sonnet**: mechanical work with a clear spec — searches, summarisation, boilerplate,
-  simple designs, first-pass reviews.
-- **opus**: design docs, architectural review, adversarial review of complex changes.
-- **top tier** (fable today): complex implementation and anything where a wrong answer
-  costs a re-run. When the session itself runs on the top tier, select it by omitting
-  the model so the subagent inherits it — that keeps this rule from going stale when
-  model names change.
-
-Always prefix the subagent's name with its model class (e.g. `sonnet-log-trawl`,
-`opus-design-review`) so it's obvious at a glance which tier is doing what. For the
-external-CLI runners the muscle-model goes in the task half: `haiku-codex-<task>`,
-`haiku-cswap-<task>`.
-
-Before spawning a fresh subagent, consider a **fork** of the current session
-(`subagent_type: "fork"`) instead. A fork reads the existing conversation from the
-prompt cache (~10% of input price while the cache is warm) and needs only a short
-instruction, no briefing. A fresh subagent pays full cache-write rates on its own fresh
-system context (tools, skills, CLAUDE.md — easily 30-50k tokens) plus the full briefing
-before it does any work. So fork when the task genuinely needs the conversation context
-and the current model suits it (forks always inherit the parent model). Spawn fresh when
-it needs a different model or the context is irrelevant — a fork drags the whole
-conversation along, making every one of its turns pricier.
-
-Briefings (for fresh subagents): terse but self-contained. The subagent has no
-conversation context — include file paths, constraints, and the expected output shape.
-An ambiguous brief that forces a re-run costs more than a verbose one.
-
-For large fan-outs (many independent subagents over a list), use Workflow rather than
-hand-spawning Agents.
+Delegating to an external CLI (codex, cswap) — read
+`~/Code/brtkwr/dotfiles/claude/delegation.md` first for the exact flags, the haiku-runner
+pattern, and the failure rules.
 
 ## Dotfiles
 
