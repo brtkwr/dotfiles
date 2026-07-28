@@ -175,15 +175,15 @@
     "two-platform@two-inc": true,
     "two-slack@two-inc": true,
     "swift-lsp@claude-plugins-official": false,
-    "frontend-design@claude-plugins-official": true,
-    "claude-code@agentic-utils": true,
+    "frontend-design@claude-plugins-official": false,
+    "claude-code@agentic-utils": false,
     "disk-cleanup@agentic-utils": true,
     "svelte-lsp@agentic-utils": false,
     "ty-lsp@agentic-utils": true,
-    "cloudflare@claude-plugins-official": true,
+    "cloudflare@claude-plugins-official": false,
     "two-review@two-inc": true,
     "notion@claude-plugins-official": true,
-    "two-security@two-inc": true,
+    "two-security@two-inc": false,
     "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
@@ -223,6 +223,5 @@
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ],
-  "model": "claude-fable-5[1m]"
+  ]
 }
