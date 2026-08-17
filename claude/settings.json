@@ -223,5 +223,6 @@
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ]
+  ],
+  "model": "claude-fable-5[1m]"
 }

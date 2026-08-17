@@ -51,7 +51,7 @@ if [[ -z "$CLAUDECODE" ]]; then
   stamp=~/.dotfiles-doctor-last
   if [[ ! -f $stamp ]] || (( $(date +%s) - $(stat -f %m "$stamp") > 86400 )); then
     ~/Code/brtkwr/dotfiles/doctor.sh >/tmp/dotfiles-doctor.log 2>&1
-    [[ $? -ne 0 ]] && cat /tmp/dotfiles-doctor.log
+    [[ $? -ne 0 ]] && ~/Code/brtkwr/dotfiles/doctor.sh --fix
     touch "$stamp"
   fi
 fi
