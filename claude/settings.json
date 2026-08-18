@@ -56,7 +56,6 @@
       "Bash(kubectl logs:*)",
       "Bash(kubectl top:*)",
       "Bash(ls:*)",
-      "Bash(node:*)",
       "Bash(npm list:*)",
       "Bash(npm ls:*)",
       "Bash(npm run build:*)",
@@ -109,6 +108,7 @@
     "ask": [],
     "defaultMode": "auto"
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -220,9 +220,47 @@
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Notion touchdown writes: `notion` CLI reads plus block/page append-PATCH scoped to the Tech Touchdown pages (parent d3b446b5ccb04a28aeff5e02a7387d9f) when the user has asked for a touchdown update",
+      "kubectl operations in the `staging` namespace of the org GKE cluster (routine per usage; any prod-named namespace keeps default blocks)",
+      "gog read-only subcommands (gmail search, calendar events list, drive search, contacts list, sheets get, docs cat/export) on the user's own authenticated account"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "twoadm mutating or admin subcommands — org admin CLI with unverified semantics; confirm before any write",
+      "gog gmail send and gog calendar event creation — always confirm before sending (matches the gog skill's own rule)"
+    ],
+    "environment": [
+      "### Org-wide",
+      "- **Organization**: Two (two.inc) — the user's employer; this is a personal machine used for both employer and personal work (mixed posture, leaning personal). Evidence: unleash.two.inc contacted in transcripts, `twoadm`/`tillit` CLIs in usage, and ~14 two-inc checkouts under the home directory.",
+      "- **Cloud provider(s)**: Google Cloud Platform — gcloud (85x across projects), bq, gsutil, GKE via kubectl, and Artifact Registry (europe-north1-python.pkg.dev).",
+      "- **Repository visibility**: gh check not queryable (the home-dir checkout has no remote). Treat github.com/two-inc/* repos as private unless shown otherwise. Explicitly PUBLIC (any push there is publishing): github.com/brtkwr/metabase, github.com/brtkwr/terraform-provider-postgresql, github.com/brtkwr/prometheus-engine and their public upstreams (metabase/metabase, cyrilgdn/terraform-provider-postgresql, GoogleCloudPlatform/prometheus-engine, pingdotgg/t3code).",
+      "- **Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "- **Secrets management**: `gsecret` and `glogin` wrapper CLIs seen in shell history (likely Google Secret Manager / gcloud auth wrappers); no vault paths configured. A gitignored `.secrets` file exists in the home checkout.",
+      "- **Default / protected branches**: Unknown — not queryable here (no origin remote). Assume default branches of two-inc repos are protected (possibly via rulesets) and route changes through PRs.",
+      "- **CI/CD deploy targets**: None configured",
+      "- **Network posture**: None configured",
+      "- **Source control**: github.com — employer org `two-inc` (usage-corroborated via twoadm and unleash.two.inc plus many local checkouts) and personal account `brtkwr`. The home-directory checkout itself has no remote. Scope commits/pushes per the Repository visibility entry above.",
+      "- **Trusted internal domains**: *.two.inc (org-owned domain; unleash.two.inc usage-corroborated). Routine SaaS endpoints in use: linear.app, www.notion.so, slack.com, europe-north1-python.pkg.dev.",
+      "- **Trusted cloud buckets**: tillit-tf-bucket (usage-corroborated; appears to hold Terraform state — treat writes with care); two-beta-feast-registry-staging (config-derived — not a confirmed upload destination; uploads of local data still require confirmation); aries-mlflow-artifacts (config-derived — not a confirmed upload destination; uploads of local data still require confirmation). No wildcard adopted: the `two-*` prefix cluster is only 3 names and 'two' is a generic word.",
+      "- **Key internal services**: Linear (tickets), Notion (Tech Touchdown reporting via the `notion` CLI), Slack (#tech-platform), Unleash feature flags (unleash.two.inc), Google Workspace via `gog`, BigQuery (`bq`), GKE clusters via kubectl (staging and cyber namespaces seen).",
+      "- **Internal package registry**: GCP Artifact Registry — europe-north1-python.pkg.dev (usage-corroborated).",
+      "- **Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar. Additionally: ~/.zsh_history and ~/.bash_history carry inline secrets (never read or paste them); the gitignored `~/.secrets` file; Google Workspace data reachable via `gog` (Gmail/Calendar/Drive) is personal/confidential; Claude and Codex/OpenAI app-support dirs hold conversation history.",
+      "- **Data retention / declassification**: None configured",
+      "- **Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment (hyphen/underscore/dot-delimited — e.g. matches `prod-db`, not `producer`). The `staging` k8s namespace is routine (9x); production namespaces are not.",
+      "- **Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic; production GKE namespaces remain protected.",
+      "- **Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment. tillit-tf-bucket appears to hold Terraform state — treat it as a protected IaC surface.",
+      "### User-specific",
+      "- **Primary use of Claude Code**: software development and platform/infra engineering (GCP, GKE, Terraform) for Two, plus personal projects, dotfiles maintenance, disk-cleanup housekeeping, and reporting workflows (Linear-to-Notion touchdown, Google Workspace via gog).",
+      "- **Trusted repo**: the git repository the agent started in (its working directory) and its configured remote(s). Here that is the home-directory checkout (/Users/brtkwr, no remote configured). Personal repos live under ~/Code (github.com/brtkwr); two-inc work checkouts sit directly under ~. Confidential material is fine only in private repos; the public forks listed under Repository visibility take only their own work (content ported or first read outside that repo's session is not its own work); secrets and personal/entrusted data are never cleared into any repo by visibility.",
+      "- **Org-specific CLIs**: twoadm, tillit, zeltapp, gsecret, glogin (org/GCP wrappers); gog (Google Workspace); notion (Notion CLI); cswap/cc/ccs/ccsy (local Claude wrappers); kube/k (kubectl wrappers).",
+      "- **Routine under user prefix**: kubectl in the `staging` namespace is routine; gcloud/bq/kubectl read paths are routine."
+    ]
+  },
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ],
-  "model": "claude-fable-5[1m]"
+  ]
 }
