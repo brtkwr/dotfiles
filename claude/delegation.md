@@ -32,8 +32,10 @@ enough to read directly.
   — answer lands in `ans.txt`; tokens from the final `turn.completed` event. No usage/quota
   readout exists at all (ChatGPT-subscription auth surfaces nothing), so gate only on a
   rate-limit *error*, never a preflight %.
-- **cswap:** `cswap run 1 -- -p 'PROMPT' --model claude-sonnet-5 --output-format json 2>/dev/null > out.json`
-  — MUST pass `--model <opus-or-below>`; a bare run inherits account 1's uncredited
+- **cswap:** `cswap run <slot> -- -p 'PROMPT' --model claude-sonnet-5 --output-format json 2>/dev/null > out.json`
+  — run `cswap list` FIRST to read the slot number and pick the account with headroom;
+  slots are not stable and a stale one dies with `Error: Account-<n> does not exist`.
+  MUST pass `--model <opus-or-below>`; a bare run inherits the account's uncredited
   `claude-fable-5` default and fails with "Fable 5 requires usage credits". Answer/cost/tokens
   from `.[-1]`. Guard: check the stream's `rate_limit_event.status` — if not `allowed`, stop
   and report `resetsAt` instead of retrying.
