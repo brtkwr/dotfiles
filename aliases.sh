@@ -241,7 +241,7 @@ gsecret() {
 #   -f  Force re-login even if credentials are valid
 #   -q  Quiet mode
 #   -s  Show current ADC scopes
-#   -S  Include Sheets scope (uses application-default login with custom OAuth client)
+#   -S  Include Workspace scopes: gmail/drive/docs/sheets (also authenticates gog)
 glogin() {
   local force=false
   local quiet=false
@@ -259,7 +259,7 @@ glogin() {
       echo "  -f  Force re-login even if credentials are valid"
       echo "  -q  Quiet mode"
       echo "  -s  Show current ADC scopes"
-      echo "  -S  Include Sheets scope (uses custom OAuth client)"
+      echo "  -S  Include Workspace scopes: gmail/drive/docs/sheets (also authenticates gog)"
       echo "  -h  Show this help"
       return 0
       ;;
@@ -279,12 +279,40 @@ glogin() {
 
   # Sheets scope always triggers login (needs custom OAuth client)
   if [[ $sheets == true ]]; then
-    [[ $quiet == false ]] && echo "Logging into Google Cloud (with Sheets scope)..."
+    [[ $quiet == false ]] && echo "Logging into Google Cloud (with Workspace scopes)..."
     gcloud auth application-default login \
       --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
-      --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets \
-      ${quiet:+--quiet}
-    return $?
+      --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/documents \
+      ${quiet:+--quiet} || return $?
+
+    # Hand the same refresh token to gog, so one consent authenticates both.
+    # gog then holds its own auto-refreshing credential and is unaffected by
+    # anything that later rewrites ADC (e.g. a plain `glogin`).
+    local adc="$HOME/.config/gcloud/application_default_credentials.json"
+    local acct rt
+    acct=$(jq -r '.account // empty' "$adc" 2>/dev/null)
+    if [[ -z $acct ]]; then
+      # ADC often records an empty account; ask Google who the token belongs to
+      acct=$(curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" \
+        | jq -r '.email // empty')
+    fi
+    rt=$(jq -r '.refresh_token // empty' "$adc" 2>/dev/null)
+    if [[ -z $acct || -z $rt ]]; then
+      echo "glogin: could not read ADC; gog not updated" >&2
+      return 1
+    fi
+    if ! gog auth credentials list -p 2>/dev/null | grep -q '^ws'; then
+      gog auth credentials set \
+        "$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" --client ws >/dev/null
+    fi
+    if RT="$rt" gog auth import --email="$acct" --client ws \
+        --refresh-token-env=RT --services=gmail,drive,docs,sheets >/dev/null; then
+      [[ $quiet == false ]] && echo "gog authenticated as $acct (client: ws)"
+    else
+      echo "glogin: gog auth import failed" >&2
+      return 1
+    fi
+    return 0
   fi
 
   # Check if login is needed
