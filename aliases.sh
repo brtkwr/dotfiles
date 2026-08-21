@@ -277,9 +277,15 @@ glogin() {
     return $?
   fi
 
-  # Sheets scope always triggers login (needs custom OAuth client)
+  # Workspace scopes always trigger login (needs custom OAuth client). Two
+  # consents are unavoidable: `gcloud auth login` hardcodes its scopes and can
+  # never carry Gmail, while `application-default login` cannot refresh the CLI
+  # credential. This at least does both from one command.
   if [[ $sheets == true ]]; then
-    [[ $quiet == false ]] && echo "Logging into Google Cloud (with Workspace scopes)..."
+    [[ $quiet == false ]] && echo "1/2: gcloud CLI + ADC..."
+    gcloud auth login --update-adc ${quiet:+--quiet} || return $?
+
+    [[ $quiet == false ]] && echo "2/2: Workspace scopes for gog..."
     gcloud auth application-default login \
       --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
       --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/documents \
