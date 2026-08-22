@@ -183,7 +183,8 @@
     "two-review@two-inc": true,
     "notion@claude-plugins-official": true,
     "two-security@two-inc": false,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "mattpocock-skills@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
