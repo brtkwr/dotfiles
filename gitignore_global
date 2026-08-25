@@ -1,0 +1,5 @@
+.worktrees/
+
+.claude/settings.local.json
+
+.review/

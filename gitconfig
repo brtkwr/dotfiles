@@ -38,7 +38,7 @@
 	path = ~/Code/two/.gitconfig
 [core]
 	editor = nvim
-	excludesfile = /Users/brtkwr/.gitignore_global
+	excludesfile = ~/.gitignore_global
     # pager = delta
 [interactive]
     # diffFilter = delta --color-only

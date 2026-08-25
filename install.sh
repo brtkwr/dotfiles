@@ -34,6 +34,7 @@ link "$DOTFILES_DIR/profile" "$HOME/.profile"
 
 # Git
 link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
+link "$DOTFILES_DIR/gitignore_global" "$HOME/.gitignore_global"
 
 # Neovim
 mkdir -p "$HOME/.config"
