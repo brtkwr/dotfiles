@@ -13,15 +13,15 @@ This file (`~/.claude/CLAUDE.md`) is synced via dotfiles and loads globally. Pro
 Auto-memory is OFF — memories are intentional. Save one only when Bharat explicitly
 asks ("remember this", "save that"); never as a side effect of a task.
 
-All global memories live in ONE place, tracked in the PRIVATE repo ~/Code/brtkwr/memories (never in public dotfiles):
+All global memories live in ONE place: the PRIVATE brtkwr/memories repo, mounted as the `claude/memories` submodule of dotfiles (contents never land in the public repo — only a commit pointer):
 
-- Index: `~/.claude/MEMORY.md` (symlink -> `~/Code/brtkwr/memories/MEMORY.md`) — loaded every session via the `@` import below.
-- Detail files: `~/.claude/memory/<name>.md` (symlink -> `memories/memory/`).
+- Index: `~/.claude/MEMORY.md` (symlink -> `~/Code/brtkwr/dotfiles/claude/memories/MEMORY.md`) — loaded every session via the `@` import below.
+- Detail files: `~/.claude/memory/<name>.md` (symlink -> `dotfiles/claude/memories/memory/`).
 
 Each index line is the actionable rule itself — trigger + directive, self-sufficient —
 because only the index loads every session. Add a `memory/<name>.md` file only when
 there's real detail worth reading on demand (why, examples, edge cases); a one-line
-rule needs no file. After any memory change, commit and push the memories repo.
+rule needs no file. After any memory change, commit and push INSIDE the submodule (cd claude/memories), then commit the pointer bump in dotfiles.
 Never put memory content, colleague names, or work context in the public dotfiles repo.
 
 Project-specific memories do NOT live on this machine — they belong in the project's

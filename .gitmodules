@@ -1,0 +1,3 @@
+[submodule "claude/memories"]
+	path = claude/memories
+	url = git@github.com:brtkwr/memories.git
