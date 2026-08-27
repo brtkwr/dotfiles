@@ -10,14 +10,23 @@ This file (`~/.claude/CLAUDE.md`) is synced via dotfiles and loads globally. Pro
 
 ## Saving memories
 
-Choose scope before saving an auto-memory, then write to the matching dir and update that dir's `MEMORY.md` index:
+Auto-memory is OFF — memories are intentional. Save one only when Bharat explicitly
+asks ("remember this", "save that"); never as a side effect of a task.
 
-- **Global / cross-project** (tone, writing, git/PR habits, general tooling) → `~/.claude/projects/-Users-brtkwr/memory/`
-- **Project-specific** (repo conventions, infra, tracker workflow) → that project's memory dir; the project's own `CLAUDE.md` names the exact path.
+All global memories live in ONE place, tracked in the PRIVATE repo ~/Code/brtkwr/memories (never in public dotfiles):
 
-The harness defaults to the *current* project's dir. Override to the home dir above when the fact is genuinely global — don't let a cross-project rule get trapped in one repo's memory.
+- Index: `~/.claude/MEMORY.md` (symlink -> `~/Code/brtkwr/memories/MEMORY.md`) — loaded every session via the `@` import below.
+- Detail files: `~/.claude/memory/<name>.md` (symlink -> `memories/memory/`).
 
-Each `MEMORY.md` line is the actionable rule itself — trigger + directive, self-sufficient — because only the index is loaded every session; individual files surface only via recall, too unreliable for an always-apply rule. Keep a separate `<name>.md` file only when there's real detail worth pulling up on demand (why, examples, edge cases). A one-line rule needs no file.
+Each index line is the actionable rule itself — trigger + directive, self-sufficient —
+because only the index loads every session. Add a `memory/<name>.md` file only when
+there's real detail worth reading on demand (why, examples, edge cases); a one-line
+rule needs no file. After any memory change, commit and push the memories repo.
+Never put memory content, colleague names, or work context in the public dotfiles repo.
+
+Project-specific memories do NOT live on this machine — they belong in the project's
+own repo (its CLAUDE.md, or files it links), committed like any other code, so the
+whole team and every checkout gets them. Never write to `~/.claude/projects/*/memory/`.
 
 ## Subagent delegation
 
@@ -50,4 +59,4 @@ Config files are managed in `~/Code/brtkwr/dotfiles/`. When modifying any of the
 - **Git**: `~/Code/brtkwr/dotfiles/gitconfig`
 - **Hammerspoon**: `~/Code/brtkwr/dotfiles/hammerspoon/`
 
-@~/.claude/projects/-Users-brtkwr/memory/MEMORY.md
+@~/.claude/MEMORY.md
