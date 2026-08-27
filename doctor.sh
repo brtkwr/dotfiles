@@ -50,6 +50,12 @@ check_link "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
 check_link "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 check_link "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 check_link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
+if [ -f "$DOTFILES_DIR/claude/memories/MEMORY.md" ]; then
+  check_link "$DOTFILES_DIR/claude/memories/MEMORY.md" "$HOME/.claude/MEMORY.md"
+  check_link "$DOTFILES_DIR/claude/memories/memory" "$HOME/.claude/memory"
+else
+  echo "note: claude/memories submodule not initialised (git submodule update --init claude/memories)"
+fi
 
 # prompt to relink once, however many links drifted
 if (( relink )) && offer "run ./install.sh to relink?" ./install.sh; then

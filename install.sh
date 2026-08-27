@@ -52,6 +52,14 @@ link "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
 
+# private memories submodule (brtkwr/memories) — needs GitHub auth; skip gracefully without it
+if git -C "$DOTFILES_DIR" submodule update --init claude/memories 2>/dev/null; then
+    link "$DOTFILES_DIR/claude/memories/MEMORY.md" "$HOME/.claude/MEMORY.md"
+    link "$DOTFILES_DIR/claude/memories/memory" "$HOME/.claude/memory"
+else
+    echo "skipped claude/memories submodule (no access — private repo)"
+fi
+
 # ~/lib dyld fallback symlinks for weasyprint/pango on macOS
 # macOS SIP strips DYLD_LIBRARY_PATH at exec boundaries (e.g. /usr/bin/env),
 # so we create name-compatible symlinks in ~/lib which dyld always searches.
