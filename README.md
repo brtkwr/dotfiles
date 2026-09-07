@@ -18,6 +18,7 @@ This creates symlinks from `$HOME` to this repo, so any changes you make are aut
 - **zprofile** - shell profile
 - **gitconfig** - git settings
 - **nvim/** - Neovim config (LazyVim + ty + ruff)
+- **codex/AGENTS.md** - link to global Codex instructions in the private memories submodule; installation requires access to that repository
 
 ## Updating
 

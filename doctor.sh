@@ -57,6 +57,12 @@ else
   echo "note: claude/memories submodule not initialised (git submodule update --init claude/memories)"
 fi
 
+if [ -f "$DOTFILES_DIR/codex/AGENTS.md" ]; then
+  check_link "$DOTFILES_DIR/codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
+else
+  echo "note: private Codex instructions not available (git submodule update --init claude/memories)"
+fi
+
 # prompt to relink once, however many links drifted
 if (( relink )) && offer "run ./install.sh to relink?" ./install.sh; then
   problems=0
