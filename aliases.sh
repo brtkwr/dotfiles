@@ -312,7 +312,7 @@ glogin() {
         "$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" --client ws >/dev/null
     fi
     if RT="$rt" gog auth import --email="$acct" --client ws \
-        --refresh-token-env=RT --services=gmail,drive,docs,sheets >/dev/null; then
+        --refresh-token-env=RT --services=gmail,drive,docs,sheets --force >/dev/null; then
       [[ $quiet == false ]] && echo "gog authenticated as $acct (client: ws)"
     else
       echo "glogin: gog auth import failed" >&2
