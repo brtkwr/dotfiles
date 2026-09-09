@@ -108,7 +108,7 @@
     "ask": [],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "claude-fable-5-1[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -263,5 +263,10 @@
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ]
+  ],
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    }
+  }
 }
