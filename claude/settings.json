@@ -210,6 +210,11 @@
     }
   },
   "effortLevel": "medium",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    }
+  },
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
@@ -263,10 +268,5 @@
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ],
-  "modelSettings": {
-    "claude-fable-5-1": {
-      "effortLevel": "high"
-    }
-  }
+  ]
 }
