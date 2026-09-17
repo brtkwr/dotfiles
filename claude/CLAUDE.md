@@ -54,6 +54,7 @@ pattern, and the failure rules.
 Config files are managed in `~/Code/brtkwr/dotfiles/`. When modifying any of these, update the source and push:
 
 - **Claude instructions**: `~/Code/brtkwr/dotfiles/claude/CLAUDE.md`
+- **claude.ai profile text**: `~/Code/brtkwr/dotfiles/claude/web-agent-common.md` — source of record for the "instruction for Claude" in the claude.ai profile; the live setting is updated by hand from it
 - **Shell**: `~/Code/brtkwr/dotfiles/zshrc`, `~/Code/brtkwr/dotfiles/profile`, `~/Code/brtkwr/dotfiles/zprofile`
 - **Neovim**: `~/Code/brtkwr/dotfiles/nvim/`
 - **Git**: `~/Code/brtkwr/dotfiles/gitconfig`
