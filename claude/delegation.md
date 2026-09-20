@@ -5,7 +5,8 @@ rules live in `CLAUDE.md`; only the external-CLI mechanics are here.
 
 ## Priority order
 
-1. **`codex exec` (default)** — GPT via Codex CLI, model `gpt-5.6-sol`. First choice for
+1. **`codex exec` (default)** — GPT via Codex CLI on whatever `~/.codex/config.toml`
+   sets; never name a model here, it goes stale and gets repeated as fact. First choice for
    any self-contained delegated task: a second model's take, spreading token cost off my
    own quota, non-interactive research/edits.
 2. **`cswap run`** — Claude Code under a different claude.ai account. Use when the work
@@ -28,6 +29,10 @@ enough to read directly.
 
 ## Invocation
 
+- **Raise effort for adversarial review:** add `-c model_reasoning_effort="high"` to the
+  `codex exec` call. The config default suits everyday work; a review pass over a seam,
+  a sequencing change or anything cross-repo is where the extra effort earns its cost.
+  Override per invocation — do not edit the config.
 - **codex:** `codex exec --skip-git-repo-check -s read-only --json -o ans.txt "PROMPT" 2>/dev/null`
   — answer lands in `ans.txt`; tokens from the final `turn.completed` event. No usage/quota
   readout exists at all (ChatGPT-subscription auth surfaces nothing), so gate only on a
