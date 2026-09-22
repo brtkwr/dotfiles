@@ -79,6 +79,34 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   fi
 fi
 
+# Skills: content lives in claude/memories/skills. Claude reads ~/.claude/skills,
+# Codex reads ~/.agents/skills. A real directory in ~/.claude/skills shadows the
+# tracked copy and drifts from it, which has happened three times.
+if [ -d "$HOME/.agents/skills" ]; then
+  for dest in "$HOME/.claude/skills"/*/; do
+    dest=${dest%/}
+    name=$(basename "$dest")
+    [[ $name == synced ]] && continue
+    if [[ ! -L $dest ]]; then
+      echo "drift: $dest is a real directory, shadowing the tracked skill"
+      if ! offer "replace with a symlink (keeping a .backup)?" \
+           bash -c 'mv "$1" "$1.backup" && ln -s "$HOME/.agents/skills/$2" "$1"' _ "$dest" "$name"; then
+        echo "  fix: mv $dest{,.backup} && ln -s ~/.agents/skills/$name $dest"
+        ((problems++))
+      fi
+    fi
+  done
+  # Every tracked skill should be visible to Claude, not just Codex.
+  for src in "$HOME/.agents/skills"/*/; do
+    name=$(basename "${src%/}")
+    if [[ ! -e "$HOME/.claude/skills/$name" ]]; then
+      echo "drift: skill '$name' is not linked into ~/.claude/skills, so Claude cannot see it"
+      echo "  fix: cd $DOTFILES_DIR && ./install.sh"
+      ((problems++)); relink=1
+    fi
+  done
+fi
+
 if git log origin/main..HEAD --oneline 2>/dev/null | grep -q .; then
   echo "drift: dotfiles repo has unpushed commits"
   git log origin/main..HEAD --oneline | sed 's/^/  /'
