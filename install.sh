@@ -59,8 +59,15 @@ if git -C "$DOTFILES_DIR" submodule update --init claude/memories 2>/dev/null; t
     # Skills are shared: Claude reads ~/.claude/skills, Codex reads ~/.agents/skills,
     # and ~/.claude/skills/<name> symlinks into ~/.agents/skills. Private, so they
     # live in the submodule rather than this repo.
-    mkdir -p "$HOME/.agents"
+    mkdir -p "$HOME/.agents" "$HOME/.claude/skills"
     link "$DOTFILES_DIR/claude/memories/skills" "$HOME/.agents/skills"
+    # Claude only reads ~/.claude/skills, so link each one in. Keep these as
+    # symlinks — a real directory here shadows the tracked copy and silently
+    # drifts from it.
+    for skill in "$HOME/.agents/skills"/*/; do
+        [ -d "$skill" ] || continue
+        link "${skill%/}" "$HOME/.claude/skills/$(basename "$skill")"
+    done
     # Codex instructions also stay in the private submodule.
     if [ -f "$DOTFILES_DIR/codex/AGENTS.md" ]; then
         mkdir -p "$HOME/.codex"
