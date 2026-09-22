@@ -56,6 +56,11 @@ link "$DOTFILES_DIR/claude/hooks" "$HOME/.claude/hooks"
 if git -C "$DOTFILES_DIR" submodule update --init claude/memories 2>/dev/null; then
     link "$DOTFILES_DIR/claude/memories/MEMORY.md" "$HOME/.claude/MEMORY.md"
     link "$DOTFILES_DIR/claude/memories/memory" "$HOME/.claude/memory"
+    # Skills are shared: Claude reads ~/.claude/skills, Codex reads ~/.agents/skills,
+    # and ~/.claude/skills/<name> symlinks into ~/.agents/skills. Private, so they
+    # live in the submodule rather than this repo.
+    mkdir -p "$HOME/.agents"
+    link "$DOTFILES_DIR/claude/memories/skills" "$HOME/.agents/skills"
     # Codex instructions also stay in the private submodule.
     if [ -f "$DOTFILES_DIR/codex/AGENTS.md" ]; then
         mkdir -p "$HOME/.codex"
