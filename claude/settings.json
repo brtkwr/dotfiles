@@ -108,7 +108,6 @@
     "ask": [],
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -185,7 +184,8 @@
     "two-security@two-inc": false,
     "ponytail@ponytail": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "1password@1password": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
@@ -206,6 +206,12 @@
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "1password": {
+      "source": {
+        "source": "github",
+        "repo": "1Password/1password-claude-plugin"
       }
     }
   },
