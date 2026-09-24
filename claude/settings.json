@@ -137,6 +137,11 @@
             "type": "command",
             "command": "/Users/brtkwr/.claude/hooks/nudge-worktree-for-feature-branch.sh",
             "statusMessage": "Checking for feature-branch git op outside worktree"
+          },
+          {
+            "type": "command",
+            "command": "/Users/brtkwr/.claude/hooks/no-rewrite-after-human-review.sh",
+            "statusMessage": "Checking for history rewrite on a human-reviewed PR"
           }
         ]
       }
