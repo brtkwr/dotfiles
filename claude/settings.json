@@ -152,6 +152,18 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/brtkwr/.claude/hooks/require-pr-watch.sh",
+            "timeout": 20,
+            "statusMessage": "Checking opened PRs have a watcher"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

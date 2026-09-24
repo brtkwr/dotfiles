@@ -10,7 +10,7 @@ set -euo pipefail
 INPUT=$(cat)
 
 CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
-if ! echo "$CMD" | grep -qE '(^|[^A-Za-z0-9])gh pr create'; then
+if ! echo "$CMD" | grep -qE '(^|[^A-Za-z0-9])gh pr create|create[-_]pr|pr[-_]create'; then
   exit 0
 fi
 
@@ -21,10 +21,16 @@ if [ -z "$PR_URL" ]; then
 fi
 PR_NUM=$(echo "$PR_URL" | grep -oE '[0-9]+$')
 
+# Record it so require-pr-watch.sh (Stop hook) can block the turn until a
+# watcher heartbeats for it.
+SESSION=$(echo "$INPUT" | jq -r '.session_id // "unknown"')
+mkdir -p ~/.claude/state/pr-watch
+grep -qxF "$PR_URL" ~/.claude/state/pr-watch/"$SESSION".prs 2>/dev/null || echo "$PR_URL" >> ~/.claude/state/pr-watch/"$SESSION".prs
+
 # Emit as additionalContext via the PostToolUse hook JSON output shape.
 jq -cn --arg url "$PR_URL" --arg num "$PR_NUM" '{
   hookSpecificOutput: {
     hookEventName: "PostToolUse",
-    additionalContext: ("PR #" + $num + " opened via bare `gh pr create` (" + $url + "). The user has TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION=fix set expecting `two-github-create` skill or `two-github-pr-review` skill to auto-arm two-github-autofix-pipelines / two-github-watch-pipelines after push, but bare `gh pr create` bypasses that. Arm `two-github-watch-pipelines` on PR " + $num + " now, and prefer routing future PR creation through the `two-github-create` skill so this auto-fires.")
+    additionalContext: ("PR #" + $num + " opened via bare `gh pr create` (" + $url + "). The user has TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION=fix set expecting `two-github-create` skill or `two-github-pr-review` skill to auto-arm two-github-autofix-pipelines / two-github-watch-pipelines after push, but bare `gh pr create` bypasses that. Arm `two-github-watch-pipelines` on PR " + $num + " now; the watcher loop must run `~/.claude/hooks/pr-watch-beat.sh " + $url + "` every iteration or the Stop hook will block ending the turn, and prefer routing future PR creation through the `two-github-create` skill so this auto-fires.")
   }
 }'
