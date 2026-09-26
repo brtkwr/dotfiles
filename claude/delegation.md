@@ -34,9 +34,9 @@ enough to read directly.
   a sequencing change or anything cross-repo is where the extra effort earns its cost.
   Override per invocation — do not edit the config.
 - **codex:** `codex exec --skip-git-repo-check -s read-only --json -o ans.txt "PROMPT" 2>/dev/null`
-  — answer lands in `ans.txt`; tokens from the final `turn.completed` event. No usage/quota
-  readout exists at all (ChatGPT-subscription auth surfaces nothing), so gate only on a
-  rate-limit *error*, never a preflight %.
+  — answer lands in `ans.txt`; tokens from the final `turn.completed` event. Run
+  `claude/bin/codex-credit` first: it reads `account/rateLimits/read` from `codex app-server`
+  (the `/status` data) and exits 1 when `ordinaryUsageAllowed` is false, so don't launch.
 - **cswap:** `cswap run <slot> -- -p 'PROMPT' --model claude-sonnet-5 --output-format json 2>/dev/null > out.json`
   — run `cswap list` FIRST to read the slot number and pick the account with headroom;
   slots are not stable and a stale one dies with `Error: Account-<n> does not exist`.
@@ -45,8 +45,8 @@ enough to read directly.
   from `.[-1]`. Guard: check the stream's `rate_limit_event.status` — if not `allowed`, stop
   and report `resetsAt` instead of retrying.
 
-Neither CLI exposes a usage percentage, so an "exit above 90%" preflight is impossible;
-gate on these status/error signals instead. Verbose jq parsing and session-profile paths
+codex exposes its usage through the app-server (`claude/bin/codex-credit`); cswap has no
+percentage, so gate cswap on the status/error signals above. Verbose jq parsing and session-profile paths
 are in the `reference_codex_delegation` / `reference_cswap_delegation` memories.
 
 ## Failure falls back to the parent, never sideways
