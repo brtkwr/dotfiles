@@ -241,7 +241,7 @@ gsecret() {
 #   -f  Force re-login even if credentials are valid
 #   -q  Quiet mode
 #   -s  Show current ADC scopes
-#   -S  Include Workspace scopes: gmail/drive/docs/sheets (also authenticates gog)
+#   -S  Include Workspace scopes: gmail/drive/docs/sheets (also authenticates gog; skipped if all valid)
 glogin() {
   local force=false
   local quiet=false
@@ -277,11 +277,21 @@ glogin() {
     return $?
   fi
 
-  # Workspace scopes always trigger login (needs custom OAuth client). Two
+  # Workspace scopes need a custom OAuth client. Two
   # consents are unavoidable: `gcloud auth login` hardcodes its scopes and can
   # never carry Gmail, while `application-default login` cannot refresh the CLI
   # credential. This at least does both from one command.
   if [[ $sheets == true ]]; then
+    # Skip when the CLI token, ADC Workspace scopes and gog's token all still work
+    if [[ $force == false ]] &&
+      gcloud auth print-access-token &>/dev/null &&
+      curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" |
+        jq -e '.scope // "" | contains("gmail.modify")' &>/dev/null &&
+      gog auth list --check --client ws -j 2>/dev/null | jq -e '[.accounts[] | select(.client == "ws" and .valid)] | length > 0' &>/dev/null; then
+      [[ $quiet == false ]] && echo "GCP CLI, ADC (Workspace scopes) and gog are valid."
+      return 0
+    fi
+
     [[ $quiet == false ]] && echo "1/2: gcloud CLI + ADC..."
     gcloud auth login --update-adc ${quiet:+--quiet} || return $?
 
