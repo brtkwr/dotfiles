@@ -243,7 +243,8 @@ brew() {
   case "$1" in upgrade | install | reinstall)
     local g
     g=$(realpath "$(command -v gog)" 2>/dev/null) || return 0
-    codesign -dv "$g" 2>&1 | grep -q 'Authority=local-codesign' ||
+    # Untrusted self-signed certs show no Authority line; match the designated requirement
+    codesign -d -r- "$g" 2>&1 | grep -q 'identifier gog and certificate leaf' ||
       codesign -f -s local-codesign --identifier gog "$g" 2>/dev/null
     ;;
   esac
