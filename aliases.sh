@@ -236,6 +236,19 @@ gsecret() {
   gcloud secrets versions access latest --secret="$secret_name" --project="$project" | tr -d '\n' | pbcopy && echo "copied $secret_name to clipboard" >&2
 }
 
+# Homebrew: re-sign gog with the local-codesign identity after upgrades, so its
+# Keychain "Always Allow" survives (ad-hoc signatures change on every build)
+brew() {
+  command brew "$@" || return $?
+  case "$1" in upgrade | install | reinstall)
+    local g
+    g=$(realpath "$(command -v gog)" 2>/dev/null) || return 0
+    codesign -dv "$g" 2>&1 | grep -q 'Authority=local-codesign' ||
+      codesign -f -s local-codesign --identifier gog "$g" 2>/dev/null
+    ;;
+  esac
+}
+
 # GCP: Login helper
 # Usage: glogin [-f] [-q] [-s] [-S]
 #   -f  Force re-login even if credentials are valid
