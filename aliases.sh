@@ -236,18 +236,13 @@ gsecret() {
   gcloud secrets versions access latest --secret="$secret_name" --project="$project" | tr -d '\n' | pbcopy && echo "copied $secret_name to clipboard" >&2
 }
 
-# Homebrew: re-sign gog with the local-codesign identity after upgrades, so its
-# Keychain "Always Allow" survives (ad-hoc signatures change on every build)
-brew() {
-  command brew "$@" || return $?
-  case "$1" in upgrade | install | reinstall)
-    local g
-    g=$(realpath "$(command -v gog)" 2>/dev/null) || return 0
-    # Untrusted self-signed certs show no Authority line; match the designated requirement
-    codesign -d -r- "$g" 2>&1 | grep -q 'identifier gog and certificate leaf' ||
-      codesign -f -s local-codesign --identifier gog "$g" 2>/dev/null
-    ;;
-  esac
+# gog: encrypted file keyring, unlocked by a password that Apple's `security`
+# tool reads from Keychain. Keychain pins gog by exact build, so storing tokens
+# there re-prompts after every upgrade; `security` has a stable identity.
+gog() {
+  GOG_KEYRING_BACKEND=file \
+    GOG_KEYRING_PASSWORD="$(security find-generic-password -s gog-keyring-password -a "$USER" -w 2>/dev/null)" \
+    command gog "$@"
 }
 
 # GCP: Login helper
