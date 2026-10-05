@@ -277,29 +277,41 @@ glogin() {
     return $?
   fi
 
-  # Workspace scopes need a custom OAuth client. Two
-  # consents are unavoidable: `gcloud auth login` hardcodes its scopes and can
-  # never carry Gmail, while `application-default login` cannot refresh the CLI
-  # credential. This at least does both from one command.
+  # Workspace scopes need a custom OAuth client. Up to two consents: `gcloud auth
+  # login` hardcodes its scopes and can never carry Gmail, while
+  # `application-default login` cannot refresh the CLI credential. Each runs only
+  # when its own credential has lapsed; a valid Workspace ADC re-seeds gog with no
+  # browser at all.
   if [[ $sheets == true ]]; then
-    # Skip when the CLI token, ADC Workspace scopes and gog's token all still work
-    if [[ $force == false ]] &&
-      gcloud auth print-access-token &>/dev/null &&
+    # Check each credential separately and redo only the ones that have lapsed
+    local cli_ok=false adc_ok=false gog_ok=false
+    if [[ $force == false ]]; then
+      gcloud auth print-access-token &>/dev/null && cli_ok=true
       curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" |
-        jq -e '.scope // "" | contains("gmail.modify")' &>/dev/null &&
-      gog auth list --check --client ws -j 2>/dev/null | jq -e '[.accounts[] | select(.client == "ws" and .valid)] | length > 0' &>/dev/null; then
+        jq -e '.scope // "" | contains("gmail.modify")' &>/dev/null && adc_ok=true
+      gog auth list --check --client ws -j 2>/dev/null |
+        jq -e '[.accounts[] | select(.client == "ws" and .valid)] | length > 0' &>/dev/null && gog_ok=true
+    fi
+    if [[ $cli_ok == true && $adc_ok == true && $gog_ok == true ]]; then
       [[ $quiet == false ]] && echo "GCP CLI, ADC (Workspace scopes) and gog are valid."
       return 0
     fi
 
-    [[ $quiet == false ]] && echo "1/2: gcloud CLI + ADC..."
-    gcloud auth login --update-adc ${quiet:+--quiet} || return $?
+    if [[ $cli_ok == false ]]; then
+      # No --update-adc: step 2 owns ADC, and a valid Workspace ADC must survive this
+      [[ $quiet == false ]] && echo "gcloud CLI login..."
+      gcloud auth login ${quiet:+--quiet} || return $?
+    fi
 
-    [[ $quiet == false ]] && echo "2/2: Workspace scopes for gog..."
-    gcloud auth application-default login \
-      --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
-      --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/documents \
-      ${quiet:+--quiet} || return $?
+    if [[ $adc_ok == false ]]; then
+      [[ $quiet == false ]] && echo "Workspace scopes for ADC + gog..."
+      gcloud auth application-default login \
+        --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
+        --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/documents \
+        ${quiet:+--quiet} || return $?
+    elif [[ $gog_ok == true ]]; then
+      return 0
+    fi
 
     # Hand the same refresh token to gog, so one consent authenticates both.
     # gog then holds its own auto-refreshing credential and is unaffected by
