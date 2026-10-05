@@ -36,6 +36,9 @@ link "$DOTFILES_DIR/profile" "$HOME/.profile"
 link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig"
 link "$DOTFILES_DIR/gitignore_global" "$HOME/.gitignore_global"
 
+# direnv: personal repos get the personal gcloud configuration
+link "$DOTFILES_DIR/direnv/brtkwr.envrc" "$HOME/Code/brtkwr/.envrc"
+
 # Neovim
 mkdir -p "$HOME/.config"
 link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"

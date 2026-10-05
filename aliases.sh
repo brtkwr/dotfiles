@@ -243,6 +243,8 @@ gsecret() {
 #   -s  Show current ADC scopes
 #   -S  Include Workspace scopes: gmail/drive/docs/sheets (also authenticates gog; skipped if all valid)
 glogin() {
+  # Always the Two identity, even inside a directory that selects another config
+  local -x CLOUDSDK_ACTIVE_CONFIG_NAME=default
   local force=false
   local quiet=false
   local show_scopes=false
