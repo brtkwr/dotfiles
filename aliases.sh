@@ -491,3 +491,17 @@ cswap() {
 
 # 1Password secrets
 op-refresh() { op inject -i ~/.secrets.tpl >~/.secrets.cache && source ~/.secrets.cache && echo "secrets refreshed"; }
+
+# mosh to hosts behind an ssh ProxyCommand (e.g. GCP IAP, where public port 22 is
+# closed): mosh's default replaces the ProxyCommand, so resolve the host's real
+# address and let mosh bootstrap through ssh as configured. The ssh Host entry must
+# also match that address. Usage: mosh [options] host
+mosh() {
+  local host=${@[-1]} real
+  if ssh -G "$host" 2>/dev/null | grep -q '^proxycommand '; then
+    real=$(ssh -G "$host" 2>/dev/null | awk '/^hostname /{print $2}')
+    command mosh --experimental-remote-ip=local "${@[1,-2]}" "$real"
+  else
+    command mosh "$@"
+  fi
+}
