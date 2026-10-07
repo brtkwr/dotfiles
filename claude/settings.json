@@ -192,17 +192,15 @@
     "two-slack@two-inc": true,
     "swift-lsp@claude-plugins-official": false,
     "frontend-design@claude-plugins-official": true,
-    "claude-code@agentic-utils": false,
-    "disk-cleanup@agentic-utils": true,
-    "svelte-lsp@agentic-utils": false,
-    "ty-lsp@agentic-utils": true,
     "cloudflare@claude-plugins-official": false,
     "two-review@two-inc": true,
     "two-security@two-inc": false,
     "ponytail@ponytail": true,
     "mattpocock-skills@claude-plugins-official": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
-    "1password@1password": true
+    "1password@1password": true,
+    "agentic-utils-disk-cleanup@agentic-utils": true,
+    "agentic-utils-ty-lsp@agentic-utils": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
