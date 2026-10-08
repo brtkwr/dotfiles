@@ -16,9 +16,19 @@ if git -C "$cwd" rev-parse --git-dir >/dev/null 2>&1; then
     fi
 fi
 
-# magenta ‹worktree› when in one
+# magenta ‹worktree› when in one: claude -w sets .worktree; plain `git worktree add` ones are spotted by git-dir != common-dir
 wt=$(echo "$input" | jq -r '.worktree.name // empty')
+if [ -z "$wt" ]; then
+    { read -r gd; read -r cd_; read -r top; } < <(git -C "$cwd" rev-parse --path-format=absolute --git-dir --git-common-dir --show-toplevel 2>/dev/null)
+    [ -n "$gd" ] && [ "$gd" != "$cd_" ] && wt=$(basename "$top")
+fi
 [ -n "$wt" ] && git_seg="${git_seg} \033[35m‹${wt}›\033[0m"
+
+# session name (bold, first) and green /rc link, both from sessions/<pid>.json
+sid=$(echo "$input" | jq -r '.session_id')
+IFS=$'\t' read -r sname rc < <(jq -r --arg s "$sid" 'select(.sessionId==$s) | [(.name // ""), (.bridgeSessionId // "")] | @tsv' ~/.claude/sessions/*.json 2>/dev/null | head -1)
+[ -n "$rc" ] && git_seg="${git_seg} \033]8;;https://claude.ai/code/${rc}\a\033[32m/rc\033[0m\033]8;;\a"
+[ -n "$sname" ] && git_seg="\033[1m${sname}\033[0m  ${git_seg}"
 
 # one jq pass, tab-separated: model, fast(⚡|-), effort(|-), ctx%, quota%(|-)
 # ctx% falls back to a manual token calc when used_percentage is null
