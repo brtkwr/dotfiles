@@ -250,7 +250,7 @@ gog() {
 #   -f  Force re-login even if credentials are valid
 #   -q  Quiet mode
 #   -s  Show current ADC scopes
-#   -S  Include Workspace scopes: gmail/drive/docs/sheets (also authenticates gog; skipped if all valid)
+#   -S  Include Workspace scopes: gmail/drive/docs/sheets/calendar (read-only) (also authenticates gog; skipped if all valid)
 glogin() {
   # Always the Two identity, even inside a directory that selects another config
   local -x CLOUDSDK_ACTIVE_CONFIG_NAME=default
@@ -270,7 +270,7 @@ glogin() {
       echo "  -f  Force re-login even if credentials are valid"
       echo "  -q  Quiet mode"
       echo "  -s  Show current ADC scopes"
-      echo "  -S  Include Workspace scopes: gmail/drive/docs/sheets (also authenticates gog)"
+      echo "  -S  Include Workspace scopes: gmail/drive/docs/sheets/calendar (read-only) (also authenticates gog)"
       echo "  -h  Show this help"
       return 0
       ;;
@@ -299,7 +299,7 @@ glogin() {
     if [[ $force == false ]]; then
       gcloud auth print-access-token &>/dev/null && cli_ok=true
       curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" |
-        jq -e '.scope // "" | contains("gmail.modify")' &>/dev/null && adc_ok=true
+        jq -e '.scope // "" | (contains("gmail.modify") and contains("calendar.readonly"))' &>/dev/null && adc_ok=true
       gog auth list --check --client ws -j 2>/dev/null |
         jq -e '[.accounts[] | select(.client == "ws" and .valid)] | length > 0' &>/dev/null && gog_ok=true
     fi
@@ -318,7 +318,7 @@ glogin() {
       [[ $quiet == false ]] && echo "Workspace scopes for ADC + gog..."
       gcloud auth application-default login \
         --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
-        --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/documents \
+        --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/documents,https://www.googleapis.com/auth/calendar.readonly \
         ${quiet:+--quiet} || return $?
     elif [[ $gog_ok == true ]]; then
       return 0
@@ -345,7 +345,7 @@ glogin() {
         "$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" --client ws >/dev/null
     fi
     if RT="$rt" gog auth import --email="$acct" --client ws \
-        --refresh-token-env=RT --services=gmail,drive,docs,sheets --force >/dev/null; then
+        --refresh-token-env=RT --services=gmail,drive,docs,sheets,calendar --force >/dev/null; then
       [[ $quiet == false ]] && echo "gog authenticated as $acct (client: ws)"
     else
       echo "glogin: gog auth import failed" >&2
