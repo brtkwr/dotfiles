@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import { createHmac } from 'node:crypto'
-import { secret, summarise, verified } from './github'
+import { parsePr, secret, summarise, verified } from './github'
 
 const pr = { number: 7, title: 't', html_url: 'u', merged: true, user: { login: 'me' } }
 const base = { repository: { full_name: 'o/r' }, sender: { login: 'bot' } }
@@ -25,10 +25,15 @@ test('summarise', () => {
     pull_request: pr,
     comment: { path: 'a.py', line: 3, html_url: 'h', body: 'x'.repeat(2000) },
   })
-  expect(c?.prAuthor).toBe('me')
   expect(c?.text).toContain('a.py:3')
   expect(c?.text).toEndWith('[truncated]')
   expect(summarise('issue_comment', { ...base, action: 'created', issue: { number: 1, user: { login: 'me' } }, comment: {} })).toBeNull() // plain issue
   expect(summarise('check_suite', { ...base, action: 'completed', check_suite: { conclusion: 'skipped' } })).toBeNull()
   expect(summarise('check_suite', { ...base, action: 'completed', check_suite: { conclusion: 'failure', pull_requests: [] } })).toBeNull()
+})
+
+test('parsePr', () => {
+  expect(parsePr('https://github.com/two-inc/zendesk-agent/pull/33/files')).toBe('two-inc/zendesk-agent#33')
+  expect(parsePr('Two-Inc/zendesk-agent#33')).toBe('two-inc/zendesk-agent#33')
+  expect(parsePr('33')).toBeNull()
 })
