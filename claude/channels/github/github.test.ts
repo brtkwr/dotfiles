@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import { createHmac } from 'node:crypto'
-import { parsePr, secret, summarise, verified } from './github'
+import { beatName, parsePr, secret, summarise, verified } from './github'
 
 const pr = { number: 7, title: 't', html_url: 'u', merged: true, user: { login: 'me' } }
 const base = { repository: { full_name: 'o/r' }, sender: { login: 'bot' } }
@@ -18,6 +18,7 @@ test('summarise', () => {
     summarise('pull_request_review', { ...base, action: 'submitted', pull_request: pr, review: { state, body, html_url: 'h' } })
   expect(review('commented', null)).toBeNull()
   expect(review('approved', null)?.text).toStartWith('Review approved')
+  expect(summarise('pull_request', { ...base, action: 'closed', number: 7, pull_request: pr })?.done).toBe(true)
   expect(summarise('pull_request', { ...base, action: 'synchronize', number: 7, pull_request: pr })).toBeNull()
   const c = summarise('pull_request_review_comment', {
     ...base,
@@ -34,6 +35,14 @@ test('summarise', () => {
 
 test('parsePr', () => {
   expect(parsePr('https://github.com/two-inc/zendesk-agent/pull/33/files')).toBe('two-inc/zendesk-agent#33')
-  expect(parsePr('Two-Inc/zendesk-agent#33')).toBe('two-inc/zendesk-agent#33')
+  expect(parsePr('Two-Inc/zendesk-agent#33')).toBe('Two-Inc/zendesk-agent#33')
   expect(parsePr('33')).toBeNull()
+})
+
+test('beatName matches pr-watch-beat.sh', () => {
+  const url = 'https://github.com/two-inc/zendesk-agent/pull/33'
+  const sh = Bun.spawnSync(['sed', '-E', 's#https://github.com/##; s#/pull/#_#; s#/#_#g'], { stdin: Buffer.from(url) })
+    .stdout.toString()
+    .trim()
+  expect(beatName(parsePr(url)!)).toBe(sh)
 })

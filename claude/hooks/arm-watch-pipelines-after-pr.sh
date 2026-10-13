@@ -1,6 +1,6 @@
 #!/bin/bash
 # PostToolUse hook for Bash. When `gh pr create` succeeds and prints a PR URL,
-# emit a system-reminder telling Claude to arm two-github-watch-pipelines.
+# tell Claude to subscribe_pr via the github channel, else arm two-github-watch-pipelines.
 #
 # The user's TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION=fix env var
 # already handles this WHEN a PR is opened via the two-github-create skill.
@@ -31,6 +31,6 @@ grep -qxF "$PR_URL" ~/.claude/state/pr-watch/"$SESSION".prs 2>/dev/null || echo 
 jq -cn --arg url "$PR_URL" --arg num "$PR_NUM" '{
   hookSpecificOutput: {
     hookEventName: "PostToolUse",
-    additionalContext: ("PR #" + $num + " opened via bare `gh pr create` (" + $url + "). The user has TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION=fix set expecting `two-github-create` skill or `two-github-pr-review` skill to auto-arm two-github-autofix-pipelines / two-github-watch-pipelines after push, but bare `gh pr create` bypasses that. Arm `two-github-watch-pipelines` on PR " + $num + " now; the watcher loop must run `~/.claude/hooks/pr-watch-beat.sh " + $url + "` every iteration or the Stop hook will block ending the turn, and prefer routing future PR creation through the `two-github-create` skill so this auto-fires.")
+    additionalContext: ("PR #" + $num + " opened (" + $url + "). Watch it: if the `mcp__github__subscribe_pr` tool is available (sessions started with `cc`), call it with " + $url + " and react to the <channel source=\"github\"> events it pushes; it heartbeats for the Stop hook while its forwarder is alive and unsubscribes when the PR merges or closes. If that tool is missing or returns an error, arm `two-github-watch-pipelines` instead; that loop must run `~/.claude/hooks/pr-watch-beat.sh " + $url + "` every iteration or the Stop hook will block ending the turn.")
   }
 }'

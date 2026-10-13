@@ -12,6 +12,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
+import { mkdirSync, writeFileSync } from 'node:fs'
 
 const env = process.env
 const port = Number(env.GH_CHANNEL_PORT ?? 0)
@@ -20,16 +21,20 @@ const log = (...a: unknown[]) => console.error('[github-channel]', ...a) // stdo
 
 const clip = (s: string | null | undefined, n = 1500) => ((s ?? '').length > n ? s!.slice(0, n) + ' [truncated]' : (s ?? ''))
 
-type Event = { pr: number; text: string } | null
+type Event = { pr: number; text: string; done?: boolean } | null
 
-// PRs Claude subscribed to this session, as "owner/repo#n".
+// PRs Claude subscribed to this session: lowercased "owner/repo#n" -> as given (GitHub names are case-insensitive).
 // ponytail: in-memory, gone on restart; persist if sessions get resumed a lot
-export const subscribed = new Set<string>()
+export const subscribed = new Map<string, string>()
+
+// Heartbeat file read by ~/.claude/hooks/require-pr-watch.sh: same name its pr-watch-beat.sh derives from the PR URL.
+export const beatName = (pr: string) => pr.replace('#', '_').replace('/', '_')
+const beatDir = `${env.HOME}/.claude/state/pr-watch/beat`
 
 // Accepts https://github.com/o/r/pull/n or o/r#n.
 export function parsePr(s: string): string | null {
   const m = s.trim().match(/^(?:https:\/\/github\.com\/)?([\w.-]+\/[\w.-]+)(?:\/pull\/|#)(\d+)/)
-  return m ? `${m[1]}#${m[2]}`.toLowerCase() : null
+  return m ? `${m[1]}#${m[2]}` : null
 }
 
 // Returns null for anything not worth waking Claude for.
@@ -42,6 +47,7 @@ export function summarise(event: string, p: any): Event {
       const what = p.action === 'closed' && p.pull_request.merged ? 'merged' : p.action
       return {
         pr: p.number,
+        done: p.action === 'closed',
         text: `PR ${what} by ${by}: ${p.pull_request.title}\n${p.pull_request.html_url}`,
       }
     }
@@ -116,6 +122,18 @@ async function startForwarder(repo: string, url: string, onDeath: (msg: string) 
   return null
 }
 
+// Proves to the Stop hook that each subscribed PR is watched, but only while its repo's forwarder is alive.
+function beat() {
+  mkdirSync(beatDir, { recursive: true })
+  for (const [k, pr] of subscribed) if (forwarders.has(k.split('#')[0])) writeFileSync(`${beatDir}/${beatName(pr)}`, '')
+}
+
+function unsubscribe(key: string) {
+  subscribed.delete(key)
+  const repo = key.split('#')[0]
+  if (![...subscribed.keys()].some(k => k.startsWith(repo + '#'))) stopForwarder(repo)
+}
+
 function stopForwarder(repo: string) {
   const p = forwarders.get(repo)
   forwarders.delete(repo)
@@ -137,13 +155,15 @@ function serve(mcp: Server) {
         log('summarise failed', event, err)
       }
       const repo = JSON.parse(body).repository?.full_name
-      const wanted = e && subscribed.has(`${repo}#${e.pr}`.toLowerCase())
+      const key = `${repo}#${e?.pr}`.toLowerCase()
+      const wanted = e && subscribed.has(key)
       log(event, wanted ? 'emitted' : 'ignored')
       if (wanted) {
         await mcp.notification({
           method: 'notifications/claude/channel',
-          params: { content: e.text, meta: { event, repo, pr: String(e.pr) } },
+          params: { content: e.text + (e.done ? '\n(unsubscribed automatically)' : ''), meta: { event, repo, pr: String(e.pr) } },
         })
+        if (e.done) unsubscribe(key)
       }
       return new Response('ok')
     },
@@ -177,23 +197,24 @@ if (import.meta.main) {
     ],
   }))
   mcp.setRequestHandler(CallToolRequestSchema, async req => {
-    const key = parsePr(String(req.params.arguments?.pr ?? ''))
-    if (!key) return { isError: true, ...say('expected a PR URL or owner/repo#number') }
+    const pr = parsePr(String(req.params.arguments?.pr ?? ''))
+    const key = pr?.toLowerCase()
+    if (!pr || !key) return { isError: true, ...say('expected a PR URL or owner/repo#number') }
     if (req.params.name === 'subscribe_pr') {
       const repo = key.split('#')[0]
       const err = await startForwarder(repo, url, msg =>
         mcp.notification({ method: 'notifications/claude/channel', params: { content: msg, meta: { event: 'channel_error' } } }),
       )
       if (err) return { isError: true, ...say(err) }
-      subscribed.add(key)
+      subscribed.set(key, pr)
+      beat()
     } else if (req.params.name === 'unsubscribe_pr') {
-      subscribed.delete(key)
-      const repo = key.split('#')[0]
-      if (![...subscribed].some(k => k.startsWith(repo + '#'))) stopForwarder(repo)
+      unsubscribe(key)
     } else throw new Error(`unknown tool: ${req.params.name}`)
-    return say(`subscribed: ${[...subscribed].join(', ') || 'none'}`)
+    return say(`subscribed: ${[...subscribed.values()].join(', ') || 'none'}`)
   })
   await mcp.connect(new StdioServerTransport())
+  setInterval(beat, 4 * 60_000) // Stop hook treats a PR as unwatched after 15 min without a beat
 
   // stdin closing means the session ended
   const shutdown = () => {
