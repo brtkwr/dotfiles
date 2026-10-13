@@ -458,6 +458,12 @@ claude() {
 
 alias cc="claude --permission-mode auto --allow-dangerously-skip-permissions"
 
+# claude with GitHub PR activity pushed in live (channel: claude/channels/github)
+ccgh() {
+  local cfg='{"mcpServers":{"github":{"command":"bun","args":["'$HOME'/Code/brtkwr/dotfiles/claude/channels/github/github.ts"]}}}'
+  claude --mcp-config "$cfg" --dangerously-load-development-channels server:github "$@"
+}
+
 unalias ccs 2>/dev/null
 ccs() {
   (source ~/.claude.secret && command ccs "$@")
