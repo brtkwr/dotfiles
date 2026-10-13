@@ -76,12 +76,21 @@ export function summarise(event: string, p: any): Event {
       // one per app per push; skip non-signal conclusions
       const s = p.check_suite
       if (p.action !== 'completed' || ['neutral', 'skipped', 'stale', 'cancelled'].includes(s.conclusion)) return null
+      if (s.app?.slug === 'github-actions') return null // workflow_run reports these per workflow
       const pr = s.pull_requests?.[0]?.number
       if (!pr) return null
       return {
         pr,
         text: `Checks ${s.conclusion} (${s.app?.name}) on ${s.head_sha.slice(0, 7)}\nhttps://github.com/${repo}/pull/${pr}/checks`,
       }
+    }
+    case 'workflow_run': {
+      // one per workflow per push; pull_requests is empty for runs from forks
+      const w = p.workflow_run
+      if (p.action !== 'completed' || ['neutral', 'skipped', 'stale', 'cancelled'].includes(w.conclusion)) return null
+      const pr = w.pull_requests?.[0]?.number
+      if (!pr) return null
+      return { pr, text: `Workflow ${w.name} ${w.conclusion} on ${w.head_sha.slice(0, 7)}\n${w.html_url}` }
     }
   }
   return null
@@ -94,7 +103,7 @@ export function verified(body: string, sig: string | null): boolean {
 }
 
 const forwarderBin = `${env.XDG_DATA_HOME ?? env.HOME + '/.local/share'}/gh/extensions/gh-webhook/gh-webhook`
-const events = 'pull_request,pull_request_review,pull_request_review_comment,issue_comment,check_suite'
+const events = 'pull_request,pull_request_review,pull_request_review_comment,issue_comment,check_suite,workflow_run'
 const forwarders = new Map<string, Subprocess>() // repo -> its forwarder
 
 // One forwarder per repo with a subscribed PR, so idle sessions hold no webhook; GitHub allows one forward per repo.

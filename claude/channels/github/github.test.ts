@@ -30,6 +30,23 @@ test('summarise', () => {
   expect(c?.text).toEndWith('[truncated]')
   expect(summarise('issue_comment', { ...base, action: 'created', issue: { number: 1, user: { login: 'me' } }, comment: {} })).toBeNull() // plain issue
   expect(summarise('check_suite', { ...base, action: 'completed', check_suite: { conclusion: 'skipped' } })).toBeNull()
+  const suite = (slug: string) =>
+    summarise('check_suite', {
+      ...base,
+      action: 'completed',
+      check_suite: { conclusion: 'failure', app: { slug, name: slug }, head_sha: 'abcdef12', pull_requests: [{ number: 7 }] },
+    })
+  expect(suite('github-actions')).toBeNull()
+  expect(suite('deepsource')?.text).toStartWith('Checks failure (deepsource)')
+  const run = (conclusion: string, prs: object[]) =>
+    summarise('workflow_run', {
+      ...base,
+      action: 'completed',
+      workflow_run: { name: 'CI', conclusion, head_sha: 'abcdef12', html_url: 'r', pull_requests: prs },
+    })
+  expect(run('failure', [{ number: 7 }])).toEqual({ pr: 7, text: 'Workflow CI failure on abcdef1\nr' })
+  expect(run('cancelled', [{ number: 7 }])).toBeNull()
+  expect(run('failure', [])).toBeNull()
   expect(summarise('check_suite', { ...base, action: 'completed', check_suite: { conclusion: 'failure', pull_requests: [] } })).toBeNull()
 })
 
