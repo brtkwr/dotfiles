@@ -459,7 +459,7 @@ claude() {
   fi
 }
 
-alias cc="claude --permission-mode auto --allow-dangerously-skip-permissions"
+alias cc="claude --allow-dangerously-skip-permissions"
 
 unalias ccs 2>/dev/null
 ccs() {
@@ -468,7 +468,7 @@ ccs() {
 
 unalias ccsy 2>/dev/null
 ccsy() {
-  ccs "$@" -- --permission-mode auto --allow-dangerously-skip-permissions
+  ccs "$@" -- --allow-dangerously-skip-permissions
 }
 
 ccspeak() {
