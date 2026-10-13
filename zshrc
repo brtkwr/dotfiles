@@ -42,7 +42,6 @@ source "$BREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"
 fpath=(/Users/brtkwr/.docker/completions $fpath)
 
 alias claude-mem='bun "/Users/brtkwr/.claude/plugins/cache/thedotmack/claude-mem/10.5.2/scripts/worker-service.cjs"'
-alias claude-yolo='claude --dangerously-skip-permissions'
 alias dotfiles-doctor='~/Code/brtkwr/dotfiles/doctor.sh'
 
 # Run dotfiles doctor once per day, only shows output on drift
