@@ -447,7 +447,13 @@ alias jqx="jq -r '.severity + \" | \" + .event'"
 
 unalias claude 2>/dev/null
 claude() {
-  (source ~/.claude.secret && command claude "$@")
+  # remote-control rejects --permission-mode before the verb, so pass it after
+  if [[ $1 == remote-control ]]; then
+    shift
+    (source ~/.claude.secret && command claude remote-control --permission-mode auto "$@")
+  else
+    (source ~/.claude.secret && command claude --permission-mode auto "$@")
+  fi
 }
 
 alias cc="claude --permission-mode auto --allow-dangerously-skip-permissions"
