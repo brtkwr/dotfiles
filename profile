@@ -98,3 +98,6 @@ export PATH="$PATH:/Users/brtkwr/.lmstudio/bin"
 
 # Added by Antigravity CLI installer
 export PATH="/Users/brtkwr/.local/bin:$PATH"
+
+# claude shim (loads the github channel) must win over ~/.local/bin/claude
+export PATH="$HOME/Code/brtkwr/dotfiles/claude/shims:$PATH"

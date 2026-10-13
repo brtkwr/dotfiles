@@ -456,10 +456,7 @@ claude() {
   fi
 }
 
-# GitHub channel (claude/channels/github): Claude can subscribe_pr to get PR activity pushed in.
-# Idle until a subscribe, so it's safe in every session.
-_claude_gh_channel=(--mcp-config '{"mcpServers":{"github":{"command":"bun","args":["'$HOME'/Code/brtkwr/dotfiles/claude/channels/github/github.ts"]}}}' --dangerously-load-development-channels server:github)
-alias cc='claude --allow-dangerously-skip-permissions "${_claude_gh_channel[@]}"'
+alias cc="claude --permission-mode auto --allow-dangerously-skip-permissions"
 
 unalias ccs 2>/dev/null
 ccs() {
