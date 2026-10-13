@@ -100,5 +100,7 @@ export PATH="$PATH:/Users/brtkwr/.lmstudio/bin"
 export PATH="/Users/brtkwr/.local/bin:$PATH"
 
 # Flags for every interactive claude: ccs passes them itself, the claude() function in aliases.sh reuses them.
-# Whitespace-separated, no quoting. The github channel lets Claude subscribe_pr to get PR activity pushed in.
-export CCS_CLAUDE_ARGS="--permission-mode auto --mcp-config {\"mcpServers\":{\"github\":{\"command\":\"bun\",\"args\":[\"$HOME/Code/brtkwr/dotfiles/claude/channels/github/github.ts\"]}}} --dangerously-load-development-channels server:github"
+# Whitespace-separated, no quoting. The gh-pr-events channel (agentic-utils marketplace) lets Claude subscribe_pr
+# to get PR activity pushed in; it heartbeats for ~/.claude/hooks/require-pr-watch.sh.
+export CCS_CLAUDE_ARGS="--permission-mode auto --dangerously-load-development-channels plugin:agentic-utils-gh-pr-events@agentic-utils"
+export GH_PR_EVENTS_BEAT_DIR="$HOME/.claude/state/pr-watch/beat"

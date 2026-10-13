@@ -200,7 +200,8 @@
     "chrome-devtools-mcp@claude-plugins-official": true,
     "1password@1password": true,
     "agentic-utils-disk-cleanup@agentic-utils": true,
-    "agentic-utils-ty-lsp@agentic-utils": true
+    "agentic-utils-ty-lsp@agentic-utils": true,
+    "agentic-utils-gh-pr-events@agentic-utils": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
