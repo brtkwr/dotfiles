@@ -451,8 +451,11 @@ claude() {
   if [[ $1 == (remote-control|rc) ]]; then
     shift
     (source ~/.claude.secret && command claude remote-control --permission-mode auto "$@")
+  elif [[ $1 == (mcp|plugin|update|install|doctor|config|setup-token|migrate-installer|agents) ]]; then
+    (source ~/.claude.secret && command claude "$@")
   else
-    (source ~/.claude.secret && command claude --permission-mode auto "$@")
+    # same flags ccs passes when it starts claude (CCS_CLAUDE_ARGS, set in profile)
+    (source ~/.claude.secret && command claude ${=CCS_CLAUDE_ARGS} "$@")
   fi
 }
 

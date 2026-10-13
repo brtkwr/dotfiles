@@ -99,5 +99,6 @@ export PATH="$PATH:/Users/brtkwr/.lmstudio/bin"
 # Added by Antigravity CLI installer
 export PATH="/Users/brtkwr/.local/bin:$PATH"
 
-# claude shim (loads the github channel) must win over ~/.local/bin/claude
-export PATH="$HOME/Code/brtkwr/dotfiles/claude/shims:$PATH"
+# Flags for every interactive claude: ccs passes them itself, the claude() function in aliases.sh reuses them.
+# Whitespace-separated, no quoting. The github channel lets Claude subscribe_pr to get PR activity pushed in.
+export CCS_CLAUDE_ARGS="--permission-mode auto --mcp-config {\"mcpServers\":{\"github\":{\"command\":\"bun\",\"args\":[\"$HOME/Code/brtkwr/dotfiles/claude/channels/github/github.ts\"]}}} --dangerously-load-development-channels server:github"
