@@ -100,8 +100,8 @@ export PATH="$PATH:/Users/brtkwr/.lmstudio/bin"
 export PATH="/Users/brtkwr/.local/bin:$PATH"
 
 # Flags for every interactive claude: ccs passes them itself, the claude() function in aliases.sh reuses them.
-# Whitespace-separated, no quoting. The gh-pr-events channel (agentic-utils marketplace) lets Claude subscribe_pr
+# Whitespace-separated, no quoting. The pr-events channel (agentic-utils-github plugin, agentic-utils marketplace) lets Claude subscribe_pr
 # to get PR activity pushed in; it heartbeats for ~/.claude/hooks/require-pr-watch.sh.
 # --channels (not the dev flag) needs claude/managed-settings.json installed: sudo cp it to "/Library/Application Support/ClaudeCode/".
-export CCS_CLAUDE_ARGS="--channels plugin:agentic-utils-gh-pr-events@agentic-utils"
+export CCS_CLAUDE_ARGS="--channels plugin:agentic-utils-github@agentic-utils"
 export GH_PR_EVENTS_BEAT_DIR="$HOME/.claude/state/pr-watch/beat"

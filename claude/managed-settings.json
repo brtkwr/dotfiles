@@ -1,5 +1,5 @@
 {
   "allowedChannelPlugins": [
-    { "marketplace": "agentic-utils", "plugin": "agentic-utils-gh-pr-events" }
+    { "marketplace": "agentic-utils", "plugin": "agentic-utils-github" }
   ]
 }
