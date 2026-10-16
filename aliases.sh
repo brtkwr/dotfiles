@@ -246,11 +246,13 @@ gog() {
 }
 
 # GCP: Login helper
-# Usage: glogin [-f] [-q] [-s] [-S]
+# Usage: glogin [-f] [-q] [-s] [-S] [-A]
 #   -f  Force re-login even if credentials are valid
 #   -q  Quiet mode
 #   -s  Show current ADC scopes
 #   -S  Include Workspace scopes: gmail/drive/docs/sheets/calendar (read-only) (also authenticates gog; skipped if all valid)
+#   -A  Read-only Admin SDK ADC for a <name>-admin@ account, kept in ~/.config/gcloud-admin
+#       Token: CLOUDSDK_CONFIG=~/.config/gcloud-admin gcloud auth application-default print-access-token
 glogin() {
   # Always the Two identity, even inside a directory that selects another config
   local -x CLOUDSDK_ACTIVE_CONFIG_NAME=default
@@ -258,19 +260,22 @@ glogin() {
   local quiet=false
   local show_scopes=false
   local sheets=false
+  local admin=false
 
-  while getopts ":fqsSh" opt; do
+  while getopts ":fqsSAh" opt; do
     case ${opt} in
     f) force=true ;;
     q) quiet=true ;;
     s) show_scopes=true ;;
     S) sheets=true ;;
+    A) admin=true ;;
     h)
-      echo "Usage: glogin [-f] [-q] [-s] [-S] [-h]"
+      echo "Usage: glogin [-f] [-q] [-s] [-S] [-A] [-h]"
       echo "  -f  Force re-login even if credentials are valid"
       echo "  -q  Quiet mode"
       echo "  -s  Show current ADC scopes"
       echo "  -S  Include Workspace scopes: gmail/drive/docs/sheets/calendar (read-only) (also authenticates gog)"
+      echo "  -A  Read-only Admin SDK login for your -admin@ account (separate from normal ADC)"
       echo "  -h  Show this help"
       return 0
       ;;
@@ -285,6 +290,23 @@ glogin() {
     else
       echo "No valid ADC token"
     fi
+    return $?
+  fi
+
+  # Admin SDK, read-only, in its own config dir so the super admin token never
+  # replaces everyday ADC. Read-only so a stolen refresh token cannot change anything.
+  if [[ $admin == true ]]; then
+    local -x CLOUDSDK_CONFIG="$HOME/.config/gcloud-admin"
+    if [[ $force == false ]] && curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" |
+      jq -e '.scope // "" | contains("admin.directory.rolemanagement.readonly")' &>/dev/null; then
+      [[ $quiet == false ]] && echo "Admin SDK ADC is valid."
+      return 0
+    fi
+    [[ $quiet == false ]] && echo "Admin SDK login: pick your -admin@ account in the browser..."
+    gcloud auth application-default login \
+      --client-id-file="$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" \
+      --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/admin.directory.user.readonly \
+      ${quiet:+--quiet}
     return $?
   fi
 
