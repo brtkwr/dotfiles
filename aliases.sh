@@ -239,10 +239,13 @@ gsecret() {
 # gog: encrypted file keyring, unlocked by a password that Apple's `security`
 # tool reads from Keychain. Keychain pins gog by exact build, so storing tokens
 # there re-prompts after every upgrade; `security` has a stable identity.
+# Defaults to the work client (ws, set up by glogin -S); pass --client to override.
 gog() {
+  local client=(--client ws)
+  [[ " $* " == *" --client"* ]] && client=()
   GOG_KEYRING_BACKEND=file \
     GOG_KEYRING_PASSWORD="$(security find-generic-password -s gog-keyring-password -a "$USER" -w 2>/dev/null)" \
-    command gog "$@"
+    command gog "${client[@]}" "$@"
 }
 
 # GCP: Login helper
