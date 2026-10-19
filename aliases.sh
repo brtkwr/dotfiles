@@ -239,9 +239,9 @@ gsecret() {
 # gog: encrypted file keyring, unlocked by a password that Apple's `security`
 # tool reads from Keychain. Keychain pins gog by exact build, so storing tokens
 # there re-prompts after every upgrade; `security` has a stable identity.
-# Defaults to the work client (ws, set up by glogin -S); pass --client to override.
+# Defaults to the work client (set up by glogin -S); pass --client to override.
 gog() {
-  local client=(--client ws)
+  local client=(--client work)
   [[ " $* " == *" --client"* ]] && client=()
   GOG_KEYRING_BACKEND=file \
     GOG_KEYRING_PASSWORD="$(security find-generic-password -s gog-keyring-password -a "$USER" -w 2>/dev/null)" \
@@ -325,8 +325,8 @@ glogin() {
       gcloud auth print-access-token &>/dev/null && cli_ok=true
       curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" |
         jq -e '.scope // "" | (contains("gmail.modify") and contains("calendar.readonly"))' &>/dev/null && adc_ok=true
-      gog auth list --check --client ws -j 2>/dev/null |
-        jq -e '[.accounts[] | select(.client == "ws" and .valid)] | length > 0' &>/dev/null && gog_ok=true
+      gog auth list --check --client work -j 2>/dev/null |
+        jq -e '[.accounts[] | select(.client == "work" and .valid)] | length > 0' &>/dev/null && gog_ok=true
     fi
     if [[ $cli_ok == true && $adc_ok == true && $gog_ok == true ]]; then
       [[ $quiet == false ]] && echo "GCP CLI, ADC (Workspace scopes) and gog are valid."
@@ -365,13 +365,13 @@ glogin() {
       echo "glogin: could not read ADC; gog not updated" >&2
       return 1
     fi
-    if ! gog auth credentials list -p 2>/dev/null | grep -q '^ws'; then
+    if ! gog auth credentials list -p 2>/dev/null | grep -q '^work'; then
       gog auth credentials set \
-        "$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" --client ws >/dev/null
+        "$HOME/.config/gcloud/oauth-clients/workspace-oauth.json" --client work >/dev/null
     fi
-    if RT="$rt" gog auth import --email="$acct" --client ws \
+    if RT="$rt" gog auth import --email="$acct" --client work \
         --refresh-token-env=RT --services=gmail,drive,docs,sheets,calendar --force >/dev/null; then
-      [[ $quiet == false ]] && echo "gog authenticated as $acct (client: ws)"
+      [[ $quiet == false ]] && echo "gog authenticated as $acct (client: work)"
     else
       echo "glogin: gog auth import failed" >&2
       return 1
