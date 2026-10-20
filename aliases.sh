@@ -254,8 +254,8 @@ gog() {
 #   -q  Quiet mode
 #   -s  Show current ADC scopes
 #   -S  Include Workspace scopes: gmail/drive/docs/sheets/calendar (read-only) (also authenticates gog; skipped if all valid)
-#   -A  Read-only Admin SDK ADC for a <name>-admin@ account, kept in ~/.config/gcloud-admin
-#       Token: CLOUDSDK_CONFIG=~/.config/gcloud-admin gcloud auth application-default print-access-token
+#   -A  Read-only Admin SDK ADC for a <name>-admin@ account, kept in ~/.config/gcloud-admin-ro
+#       Token: CLOUDSDK_CONFIG=~/.config/gcloud-admin-ro gcloud auth application-default print-access-token
 glogin() {
   # Always the Two identity, even inside a directory that selects another config
   local -x CLOUDSDK_ACTIVE_CONFIG_NAME=default
@@ -299,7 +299,7 @@ glogin() {
   # Admin SDK, read-only, in its own config dir so the super admin token never
   # replaces everyday ADC. Read-only so a stolen refresh token cannot change anything.
   if [[ $admin == true ]]; then
-    local -x CLOUDSDK_CONFIG="$HOME/.config/gcloud-admin"
+    local -x CLOUDSDK_CONFIG="$HOME/.config/gcloud-admin-ro"
     if [[ $force == false ]] && curl -s "https://oauth2.googleapis.com/tokeninfo?access_token=$(gcloud auth application-default print-access-token 2>/dev/null)" |
       jq -e '.scope // "" | contains("admin.directory.rolemanagement.readonly")' &>/dev/null; then
       [[ $quiet == false ]] && echo "Admin SDK ADC is valid."
