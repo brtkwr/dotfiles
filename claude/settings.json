@@ -191,17 +191,18 @@
     "two-platform@two-inc": true,
     "two-slack@two-inc": true,
     "swift-lsp@claude-plugins-official": false,
-    "frontend-design@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": false,
     "cloudflare@claude-plugins-official": false,
     "two-review@two-inc": true,
     "two-security@two-inc": false,
-    "ponytail@ponytail": true,
-    "mattpocock-skills@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true,
+    "ponytail@ponytail": false,
+    "mattpocock-skills@claude-plugins-official": false,
+    "chrome-devtools-mcp@claude-plugins-official": false,
     "1password@1password": true,
     "agentic-utils-disk-cleanup@agentic-utils": true,
     "agentic-utils-ty-lsp@agentic-utils": true,
-    "agentic-utils-github@agentic-utils": true
+    "agentic-utils-github@agentic-utils": true,
+    "agentic-utils-claude-code@agentic-utils": true
   },
   "extraKnownMarketplaces": {
     "two-inc": {
