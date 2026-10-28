@@ -45,9 +45,11 @@ clear spec; **opus** design docs and architectural/adversarial review; **top tie
 complex implementation — select it by *omitting* the model so it inherits the session's.
 Prefix the agent name with its tier (`sonnet-log-trawl`, `opus-design-review`).
 
-Delegating to an external CLI (codex, cswap) — read
-`~/Code/brtkwr/dotfiles/claude/delegation.md` first for the exact flags, the haiku-runner
-pattern, and the failure rules.
+Delegating to an external CLI: codex comes first, via the
+`agentic-utils-claude-code:codex-delegate` skill (preflight, invocation, relay runner,
+failure rules); a codex session in its own tab goes through `session-handoff`. cswap is
+second, only when the work needs Claude or another account's quota: see the
+`reference_cswap_delegation` memory.
 
 ## Dotfiles
 
