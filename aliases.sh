@@ -541,5 +541,15 @@ mosh() {
 }
 
 # Run a command as root via the separate admin account (admin has NOPASSWD sudo,
-# so this prompts once for admin's password). Usage: asudo <command> [args...]
-asudo() { su admin -c "sudo ${(j: :)${(q)@}}"; }
+# so this prompts once for admin's password).
+# Usage: asudo (root shell) | asudo -c '<shell code>' | asudo <command> [args...]
+asudo() {
+  if (( $# == 0 )); then
+    su admin -c 'sudo -i'
+  elif [[ $1 == -c ]]; then
+    (( $# == 2 )) || { echo "usage: asudo -c '<shell code>'" >&2; return 2; }
+    su admin -c "sudo sh -c ${(q)2}"
+  else
+    su admin -c "sudo ${(j: :)${(q)@}}"
+  fi
+}
