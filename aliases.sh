@@ -539,3 +539,7 @@ mosh() {
     command mosh "$@"
   fi
 }
+
+# Run a command as root via the separate admin account (admin has NOPASSWD sudo,
+# so this prompts once for admin's password). Usage: asudo <command> [args...]
+asudo() { su admin -c "sudo ${(j: :)${(q)@}}"; }
