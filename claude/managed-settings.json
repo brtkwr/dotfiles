@@ -1,4 +1,5 @@
 {
+  "channelsEnabled": true,
   "allowedChannelPlugins": [
     { "marketplace": "agentic-utils", "plugin": "agentic-utils-github" }
   ]

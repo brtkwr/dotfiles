@@ -2,7 +2,18 @@
   "cleanupPeriodDays": 90,
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION": "fix"
+    "TWO_AGENT_SKILLS_DEFAULT_GITHUB_PUSH_POST_ACTION": "fix",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "https://ai-telemetry.two.inc",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+    "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE": "cumulative",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_LOG_USER_PROMPTS": "0",
+    "OTEL_LOG_TOOL_DETAILS": "0",
+    "OTEL_LOG_RAW_API_BODIES": "0",
+    "OTEL_METRICS_INCLUDE_ENTRYPOINT": "true",
+    "OTEL_METRICS_INCLUDE_VERSION": "true"
   },
   "permissions": {
     "allow": [
@@ -195,7 +206,6 @@
     "cloudflare@claude-plugins-official": false,
     "two-review@two-inc": true,
     "two-security@two-inc": false,
-    "ponytail@ponytail": false,
     "mattpocock-skills@claude-plugins-official": false,
     "chrome-devtools-mcp@claude-plugins-official": false,
     "1password@1password": true,
@@ -218,12 +228,6 @@
         "url": "https://github.com/agentic-utils/skills.git"
       },
       "autoUpdate": true
-    },
-    "ponytail": {
-      "source": {
-        "source": "github",
-        "repo": "DietrichGebert/ponytail"
-      }
     },
     "1password": {
       "source": {
@@ -294,5 +298,6 @@
   "voiceEnabled": true,
   "pluginDirs": [
     "/Users/brtkwr/.claude/plugins/local/gog"
-  ]
+  ],
+  "otelHeadersHelper": "/Users/brtkwr/.claude/otel-headers.sh"
 }
